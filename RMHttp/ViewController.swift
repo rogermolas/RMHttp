@@ -12,7 +12,21 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        RMRequestManager.sharedManager.generalGET(completionHandler: { (response) in
+            print(response?.JSONResponse(result: HTTPObject.value(Dictionary<String,Any>())) ?? "")
+        
+        }, errorHandler: { (error) in
+            
+        }, params: nil, urlString: "http://35.201.183.109:1341/api/lobby", tag: 0)
+        
+//        let parser = RMParser()
+//        let request = RMRequest(urlString: "http://35.201.183.109:1341/api/lobby", method: .GET, hearder: nil)
+//        parser.parseWith(request: request, completionHandler: { (response) in
+//            print(response?.JSONResponse(result: HTTPObject.value(Dictionary<String,Any>())) ?? "")
+//        }) { (error) in
+//
+//        }
     }
 
     override func didReceiveMemoryWarning() {

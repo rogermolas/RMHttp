@@ -8,15 +8,14 @@
 
 import Foundation
 
-public protocol RMParserDelegate: NSObjectProtocol {
+public protocol RMParserDelegate {
     func rmParserDidfinished(_ parser: RMParser)
     func rmParserDidFail(_ parser: RMParser, error: RMError?)
     func rmParserDidCancel(_ parser: RMParser)
-    func rmParserRestartAll(_ parser: RMParser)
 }
 
-typealias RMParserCompleteSuccess = ((RMResponse?) -> Swift.Void?)
-typealias RMParserError = ((RMError?) -> Swift.Void?)
+typealias RMParserCompleteSuccess = (RMResponse?) -> Swift.Void
+typealias RMParserError = (RMError?) -> Swift.Void
 
 open class RMParser: NSObject {
     public var delegate: RMParserDelegate? = nil
@@ -29,12 +28,16 @@ open class RMParser: NSObject {
     private var currentRequest: RMRequest? = nil
     private var currentResponse: RMResponse? = nil
     
-    private var parserSuccessHandler: RMParserCompleteSuccess? = nil
+    private var parserSuccessHandler:RMParserCompleteSuccess? = nil
     private var parserErrorHandler: RMParserError? = nil
     
+    public override init() {
+        super.init()
+    }
+    
     func parseWith(request: RMRequest,
-                   completionHandler: @escaping RMParserCompleteSuccess,
-                   errorHandler: @escaping RMParserError) {
+                   completionHandler: RMParserCompleteSuccess?,
+                   errorHandler: RMParserError?) {
         parserSuccessHandler = nil
         parserErrorHandler = nil
         currentRequest = nil
@@ -82,20 +85,24 @@ open class RMParser: NSObject {
 // MARK - URLSessionDataDelegate
 extension RMParser: URLSessionDataDelegate {
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        receiveData?.append(data)
+        DispatchQueue.main.async {
+            self.receiveData?.append(data)
+        }
     }
     
     // MARK: Start recieving response
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
-        let response = response as? HTTPURLResponse
-        currentResponse = RMResponse()
-        currentResponse?.statusCode = response?.statusCode
-        currentResponse?.allHeaders = response?.allHeaderFields
-        
-        if receiveData != nil { receiveData = nil }
-        receiveData = NSMutableData()
-        receiveData?.length = 0
-        completionHandler(.allow)
+        DispatchQueue.main.async {
+            let response = response as? HTTPURLResponse
+            self.currentResponse = RMResponse()
+            self.currentResponse?.statusCode = response?.statusCode
+            self.currentResponse?.allHeaders = response?.allHeaderFields
+            
+            if self.receiveData != nil { self.receiveData = nil }
+            self.receiveData = NSMutableData()
+            self.receiveData?.length = 0
+            completionHandler(.allow)
+        }
     }
 }
 
@@ -109,11 +116,13 @@ extension RMParser: URLSessionTaskDelegate {
             self.delegate?.rmParserDidFail(self, error: responseError)
             return
         }
-        
-        if self.receiveData != nil && self.receiveData!.length > 0 {
-            currentResponse?.data = self.receiveData!
+        /** Spawn output to main queue */
+        DispatchQueue.main.async {
+            if self.receiveData != nil && self.receiveData!.length > 0 {
+                self.currentResponse?.data = self.receiveData!
+            }
+            self.parserSuccessHandler!(self.currentResponse)
+            self.delegate?.rmParserDidfinished(self)
         }
-        parserSuccessHandler!(currentResponse)
     }
 }
-
