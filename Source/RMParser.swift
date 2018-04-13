@@ -31,6 +31,12 @@ open class RMParser: NSObject {
     private var parserSuccessHandler:RMParserCompleteSuccess? = nil
     private var parserErrorHandler: RMParserError? = nil
     
+    private var startTime: CFAbsoluteTime?
+    private var initializeResponseTime: CFAbsoluteTime?
+    private var endTime: CFAbsoluteTime?
+    
+    var restrictedStatusCodes:Set<Int> = []
+    
     public override init() {
         super.init()
     }
@@ -46,17 +52,14 @@ open class RMParser: NSObject {
         parserSuccessHandler = completionHandler
         parserErrorHandler = errorHandler
         currentRequest = request
+        restrictedStatusCodes = request.restrictStatusCodes
         
         // Session configuration
         var session = URLSession.shared
-        let sessionConfig = URLSessionConfiguration.default
-        sessionConfig.allowsCellularAccess = true // use cellular data
-        sessionConfig.timeoutIntervalForRequest = request.timeoutIntervalForRequest // timeout per request
-        sessionConfig.timeoutIntervalForResource = 30.0 // timeout per resource access
-        sessionConfig.httpMaximumConnectionsPerHost = 1 // connection per host
-        session = URLSession(configuration: sessionConfig, delegate: self, delegateQueue: OperationQueue.main)
-        task = session.dataTask(with: request.request)
-        task?.resume()
+        let sessionConfig = request.sessionConfig // connection per host
+        session = URLSession(configuration: sessionConfig!, delegate: self, delegateQueue: OperationQueue.main)
+        task = session.dataTask(with: request.urlRequest)
+        self.resume()
     }
     
     // MARK: Life cycle
@@ -65,15 +68,24 @@ open class RMParser: NSObject {
         parserErrorHandler = nil
     }
     
+    // MARK: Resume task operations
+    public func resume() {
+        guard let task = task else { return }
+        if startTime == nil { startTime = CFAbsoluteTimeGetCurrent() }
+        task.resume()
+    }
+    
     // MARK: Suppend task operations
     public func suspend() {
-        task?.suspend()
+        guard let task = task else { return }
+        task.suspend()
     }
     
     // MARK: Cancel task operations
     public func cancel() {
-        task?.cancel()
-        task = nil
+        guard let task = task else { return }
+        
+        task.cancel()
         receiveData = nil
         isCancel = true
         if delegate != nil {
@@ -94,9 +106,24 @@ extension RMParser: URLSessionDataDelegate {
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
         DispatchQueue.main.async {
             let response = response as? HTTPURLResponse
+            self.initializeResponseTime = CFAbsoluteTimeGetCurrent()
+            
             self.currentResponse = RMResponse()
+            self.currentResponse?.httpResponse = response
             self.currentResponse?.statusCode = response?.statusCode
             self.currentResponse?.allHeaders = response?.allHeaderFields
+            
+            if let currentResponse = response, self.restrictedStatusCodes.contains(currentResponse.statusCode) {
+                self.isError = true
+                self.endTime = CFAbsoluteTimeGetCurrent()
+                let responseError = RMError()
+                responseError.response = self.currentResponse
+                responseError.request = self.currentRequest
+                
+                self.parserErrorHandler!(responseError)
+                self.delegate?.rmParserDidFail(self, error: responseError)
+                completionHandler(.cancel)
+            }
             
             if self.receiveData != nil { self.receiveData = nil }
             self.receiveData = NSMutableData()
@@ -109,11 +136,15 @@ extension RMParser: URLSessionDataDelegate {
 // MARK - URLSessionTaskDelegate
 extension RMParser: URLSessionTaskDelegate {
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        self.endTime = CFAbsoluteTimeGetCurrent()
         guard error == nil else {
             isError = true
-            let responseError = RMError()
-            parserErrorHandler!(responseError)
-            self.delegate?.rmParserDidFail(self, error: responseError)
+            /** Spawn output to main queue */
+            DispatchQueue.main.async {
+                let responseError = RMError()
+                self.parserErrorHandler!(responseError)
+                self.delegate?.rmParserDidFail(self, error: responseError)
+            }
             return
         }
         /** Spawn output to main queue */
@@ -121,6 +152,10 @@ extension RMParser: URLSessionTaskDelegate {
             if self.receiveData != nil && self.receiveData!.length > 0 {
                 self.currentResponse?.data = self.receiveData!
             }
+            self.currentResponse?.timeline = RMTime(
+                requestTime: self.startTime!,
+                initializeResponseTime: self.initializeResponseTime!,
+                requestCompletionTime: self.endTime!)
             self.parserSuccessHandler!(self.currentResponse)
             self.delegate?.rmParserDidfinished(self)
         }

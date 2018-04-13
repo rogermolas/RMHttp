@@ -10,7 +10,9 @@ import Foundation
 
 open class RMError {
     
+    var request: RMRequest? = nil
     var response: RMResponse? = nil
+    
     init() { }
 }
 
