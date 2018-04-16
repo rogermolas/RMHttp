@@ -25,7 +25,7 @@ class ViewController: UIViewController {
 //        }, request: request)
         
         
-        let request = RMRequest(urlString: "http://35.201.183.109:1341/api/gameNav", method: .GET, hearder: header)
+        let request = RMHttpRequest(urlString: "http://35.201.183.109:1341/api/gameNav", method: .GET, hearder: header)
         RMHttp.jsonRequest(completionHandler: { (s) in
             
         }, errorHandler: { (error) in

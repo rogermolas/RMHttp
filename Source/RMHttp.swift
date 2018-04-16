@@ -10,34 +10,31 @@ import Foundation
 
 typealias RMHttpCompleteRequest = (Any) -> Swift.Void
 typealias RMHttpCompleteString = (String?) -> Swift.Void
-typealias RMHttpErrorRequest = (RMError?) -> Swift.Void
+typealias RMHttpErrorRequest = (RMHttpError?) -> Swift.Void
 
-class RMHttp {
+open class RMHttp {
 
     class func jsonRequest(completionHandler: @escaping RMHttpCompleteRequest,
                            errorHandler: @escaping RMHttpErrorRequest,
-                           request: RMRequest) {
+                           request: RMHttpRequest) {
+        RMHttpRequestManager.sharedManager.sendRequest(completionHandler: { (response) in
+            let json = response?.JSONResponse(type: RMHttpJSON.array, value: JSONArray())
+            print(json?.getValue() ?? "")
         
-        RMRequestManager.sharedManager.sendRequest(completionHandler: { (response) in
-            let json = response?.JSONResponse(type: RMHttpJSON.array([Dictionary<String,Any>()]))
-            print(json?.value ?? "")
-            print(response?.statusCode)
-            print(response?.allHeaders)
         }, errorHandler: { (error) in
-            print(error?.response?.statusCode)
             errorHandler(error)
         }, request: request)
     }
     
     class func stringRequest(completionHandler: @escaping RMHttpCompleteString,
                              errorHandler: @escaping RMHttpErrorRequest,
-                             request: RMRequest) {
-        RMRequestManager.sharedManager.sendRequest(completionHandler: { (response) in
+                             request: RMHttpRequest) {
+        RMHttpRequestManager.sharedManager.sendRequest(completionHandler: { (response) in
             let stringResponse = response?.StringResponse(encoding: .utf8)
             if stringResponse != nil {
                 completionHandler(stringResponse?.value!)
             } else {
-                errorHandler(RMError())
+                errorHandler(RMHttpError())
             }
         }, errorHandler: { (error) in
             errorHandler(error)

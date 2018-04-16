@@ -8,14 +8,14 @@
 
 import Foundation
 
-public struct RMTime {
+public struct RMHttpTime {
     public let requestTime: CFAbsoluteTime
     public let initialResponseTime: CFAbsoluteTime
     public let requestCompletionTime: CFAbsoluteTime
     
     public let requestDuration: TimeInterval
     
-    init(
+    public init(
         requestTime:CFAbsoluteTime = 0.0,
         initializeResponseTime: CFAbsoluteTime = 0.0,
         requestCompletionTime: CFAbsoluteTime = 0.0) {

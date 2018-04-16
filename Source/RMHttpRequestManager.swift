@@ -8,8 +8,9 @@
 
 import Foundation
 
-class RMRequestManager {
-    static let sharedManager: RMRequestManager = RMRequestManager() // Single shared instance
+open class RMHttpRequestManager {
+    
+    static let sharedManager = RMHttpRequestManager() // Single shared instance
     
     fileprivate var requestList: NSMutableArray = NSMutableArray()  // Holds all request objects
     
@@ -19,10 +20,10 @@ class RMRequestManager {
     deinit { requestList.removeAllObjects() }
     
     // MARK: - Public request
-    public func sendRequest(completionHandler: @escaping RMParserCompleteSuccess,
-                            errorHandler: @escaping RMParserError,
-                            request: RMRequest) {
-        let parser = RMParser()
+    public func sendRequest(completionHandler: @escaping RMHttpParserComplete,
+                            errorHandler: @escaping RMHttpParserError,
+                            request: RMHttpRequest) {
+        let parser = RMHttpParser()
         parser.delegate = self
         parser.parseWith(request: request,
                          completionHandler: completionHandler,
@@ -32,21 +33,21 @@ class RMRequestManager {
     // MARK: Stop all requests
     public func stopAllRequest() {
         requestList.enumerateObjects({ (parser, index, isFinished) in
-            (parser as? RMParser)?.cancel()
+            (parser as? RMHttpParser)?.cancel()
         })
     }
 }
 
 // MARK - RMParserDelegate
-extension RMRequestManager: RMParserDelegate {
-    func rmParserDidfinished(_ parser: RMParser) {
+extension RMHttpRequestManager: RMHttpParserDelegate {
+    public func rmParserDidfinished(_ parser: RMHttpParser) {
         if stopAllRequestOnFailure {
             stopAllRequest()
         }
         requestList.remove(parser)
     }
     
-    func rmParserDidCancel(_ parser: RMParser) {
+    public func rmParserDidCancel(_ parser: RMHttpParser) {
         if parser.isCancel {
             requestList.remove(parser)
         }
@@ -56,7 +57,7 @@ extension RMRequestManager: RMParserDelegate {
         }
     }
     
-    func rmParserDidFail(_ parser: RMParser, error: RMError?) {
+    public func rmParserDidFail(_ parser: RMHttpParser, error: RMHttpError?) {
         if parser.isError {
             requestList.remove(parser)
         }
