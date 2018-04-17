@@ -18,6 +18,7 @@ public enum RMHttpMethod: String {
 
 open class RMHttpRequest {
     public var urlRequest: URLRequest
+    public var parameters: [String:String] = [String:String]()
     public var sessionConfig:URLSessionConfiguration!
     public var restrictStatusCodes:Set<Int> = []  // e.g 404, 500, return Error
     
@@ -62,6 +63,7 @@ open class RMHttpRequest {
     
     // Setters
     public func set(parameters: [String : String]!) {
+       self.parameters = parameters
         //let method = RMHttpMethod(rawValue: urlRequest.httpMethod ?? RMHttpMethod.GET.rawValue)
                 
     }
@@ -80,5 +82,14 @@ open class RMHttpRequest {
     
     public func setSession(config: URLSessionConfiguration) {
         sessionConfig = config
+    }
+}
+
+extension RMHttpRequest: CustomStringConvertible {
+    public var description: String {
+        return """
+        URL : \(String(describing: self.urlRequest.url))
+        Parameters : \(self.parameters)
+        """
     }
 }

@@ -8,63 +8,36 @@
 
 import Foundation
 
-public enum RMHttpObject<Value> {
-    case success(Value)
-    case error(RMHttpError)
-    
-    public var value: Value? {
-        switch self {
-            case .success(let value): return value
-            case .error: return nil
-        }
+extension Dictionary:RMHttpProtocol {
+    public func getType() -> Dictionary<String, Any>.Type? {
+        return Dictionary<String, Any>.self
     }
+    public typealias BaseObject = Dictionary<String, Any>
 }
 
-protocol RMHttpObjectAcceptable {
-    associatedtype SerializedObject
-    
-    mutating func set(object: RMHttpObject<SerializedObject>)
-    
-    func getValue() -> RMHttpObject<SerializedObject>
+extension Array:RMHttpProtocol {
+    public func getType() -> [Dictionary<String, Any>].Type? {
+        return [Dictionary<String, Any>].self
+    }
+    public typealias BaseObject = [Dictionary<String, Any>]
 }
 
-//// JSON Type (Object or Array)
-//public enum RMHttpJSON<TYPE> {
-//    case object(TYPE)
-//    case array(TYPE)
-//
-//    public var type: TYPE? {
-//        switch self {
-//            case .object(let type):  return type
-//            case .array(let type):  return type
-//        }
-//    }
-//}
+extension String: RMHttpProtocol {
+    public func getType() -> String.Type? {
+         return String.self
+    }
+    public typealias BaseObject = String
+}
 
 // JSON Type (Object or Array)
-
-
 typealias JSONObject = Dictionary<String, Any>
 typealias JSONArray = [Dictionary<String, Any>]
 
-public enum RMHttpJSON: String {
+public enum RMHttpType: String {
     case object = "JSONObject"
     case array = "JSONArray"
-}
-
-public struct Value<T>:RMHttpObjectAcceptable {
+    case string = "String"
     
-    typealias SerializedObject = T
-    
-    var httpObject: RMHttpObject<T>
-    
-    mutating func set(object: RMHttpObject<T>) {
-        httpObject = object
-    }
-    
-    func getValue() -> RMHttpObject<T> {
-        return httpObject
-    }
 }
 
 // Status code that do not contain response data.
@@ -79,25 +52,37 @@ open class RMHttpResponse {
     public var isSuccess: Bool = false
     public var timeline: RMHttpTime = RMHttpTime()
     
+    public var currentType: RMHttpType!
+   
     public init() { }
     
     // Serialize JSON response
-    public func JSONResponse<T>(type:RMHttpJSON, value: T) -> Value<T> {
+    public func JSONResponse<T>(type:RMHttpType, value: T) -> RMHttpObject<T> {
+        currentType = type // reference the type
+        
+        guard self.data != nil else { return .error(RMHttpError())}
+        
         switch type {
         case .object:
-            let data =  httpJSONResponseObject(data: self.data! as Data, type: Dictionary<String, Any>())
-            let value = Value(httpObject: data)
-            return value as! Value<T>
+            let data =  httpJSONResponseObject(expected: Dictionary<String, Any>())
+            if data.isSuccess {
+                return data as! RMHttpObject<T>
+            }
+            return RMHttpObject.error(RMHttpError())
         case .array:
-            let data =  httpJSONResponseArray(data: self.data! as Data, type: [Dictionary<String, Any>()])
-            let value = Value(httpObject: data)
-            return value as! Value<T>
+            let data =  httpJSONResponseArray(expected: [Dictionary<String, Any>()])
+            if data.isSuccess {
+                return data as! RMHttpObject<T>
+            }
+            return RMHttpObject.error(RMHttpError())
+        default:
+            return RMHttpObject.error(RMHttpError())
         }
     }
     
     // Serialize String response
     public func StringResponse(encoding: String.Encoding?) -> RMHttpObject<String> {
-        return httpResponseString(data: self.data! as Data, encoding: encoding)
+        return httpResponseString(encoding: encoding)
     }
 }
 
@@ -105,37 +90,60 @@ open class RMHttpResponse {
 extension RMHttpResponse {
     
     // JSON Object
-    private func httpJSONResponseObject<T>(data: Data, type: T) -> RMHttpObject<T> {
+    private func httpJSONResponseObject<T>(expected: T) -> RMHttpObject<T> {
         let succesDictionary = ["success" : true] as! T
         if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success(succesDictionary)}
         do {
-            let object = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! T
-            return .success(object)
-        } catch {
-            return .error(RMHttpError())
+            if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
+                return .success(object)
+            } else {
+                return .error(RMHttpError())
+            }
+        } catch let error {
+            return .error(RMHttpError(error: error))
         }
     }
     
     // JSON Array
-    private func httpJSONResponseArray<T>(data: Data, type: T) -> RMHttpObject<T> {
+    private func httpJSONResponseArray<T>(expected: T) -> RMHttpObject<T> {
         let succesDictionary = [["success" : true]] as! T
         if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success(succesDictionary)}
         do {
-            let object = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as! T
-            return .success(object)
-        } catch {
-            return RMHttpObject.error(RMHttpError())
+            if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
+                return .success(object)
+            } else {
+                return .error(RMHttpError())
+            }
+        } catch let error {
+            return RMHttpObject.error(RMHttpError(error: error))
         }
     }
     
     // String Response
-    private func httpResponseString(data: Data, encoding: String.Encoding?) -> RMHttpObject<String> {
+    private func httpResponseString(encoding: String.Encoding?) -> RMHttpObject<String> {
         if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success("success") }
-        if let string:String = String(data: data, encoding: encoding!) {
+        if let string:String = String(data:self.data! as Data, encoding: encoding!) {
             return .success(string)
         }
         return .error(RMHttpError())
     }
+}
+
+extension RMHttpResponse: RMHttpObjectAcceptable {
+    public func set(object: String?) {
+        
+    }
+    
+    public func getValue() -> String? {
+        return nil
+    }
+    
+    public func getError() -> RMHttpError? {
+        return nil
+    }
+    
+    public typealias SerializedObject = String
+    
 }
 
 extension RMHttpResponse: CustomStringConvertible {

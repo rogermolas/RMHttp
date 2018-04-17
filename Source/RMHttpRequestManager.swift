@@ -12,7 +12,9 @@ open class RMHttpRequestManager {
     
     static let sharedManager = RMHttpRequestManager() // Single shared instance
     
-    fileprivate var requestList: NSMutableArray = NSMutableArray()  // Holds all request objects
+    private var requestList: NSMutableArray = NSMutableArray()  // Holds all request objects
+    
+    private let queue = DispatchQueue(label: "com.RMHttp.request.started")
     
     var stopAllRequestOnFailure = false
     
@@ -23,6 +25,10 @@ open class RMHttpRequestManager {
     public func sendRequest(completionHandler: @escaping RMHttpParserComplete,
                             errorHandler: @escaping RMHttpParserError,
                             request: RMHttpRequest) {
+        queue.async {
+       
+        }
+        
         let parser = RMHttpParser()
         parser.delegate = self
         parser.parseWith(request: request,
