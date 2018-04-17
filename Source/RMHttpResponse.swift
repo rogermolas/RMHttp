@@ -8,27 +8,6 @@
 
 import Foundation
 
-extension Dictionary:RMHttpProtocol {
-    public func getType() -> Dictionary<String, Any>.Type? {
-        return Dictionary<String, Any>.self
-    }
-    public typealias BaseObject = Dictionary<String, Any>
-}
-
-extension Array:RMHttpProtocol {
-    public func getType() -> [Dictionary<String, Any>].Type? {
-        return [Dictionary<String, Any>].self
-    }
-    public typealias BaseObject = [Dictionary<String, Any>]
-}
-
-extension String: RMHttpProtocol {
-    public func getType() -> String.Type? {
-         return String.self
-    }
-    public typealias BaseObject = String
-}
-
 // JSON Type (Object or Array)
 typealias JSONObject = Dictionary<String, Any>
 typealias JSONArray = [Dictionary<String, Any>]

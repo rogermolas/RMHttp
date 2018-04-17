@@ -63,8 +63,6 @@ public enum RMHttpObject<Value:RMHttpProtocol> : RMHttpObjectAcceptable {
 }
 
 // Comply to RMHttp base object Protocol
-
-
 extension RMHttpObject : RMHttpProtocol {
     
     public typealias BaseObject = Value
@@ -86,4 +84,28 @@ extension RMHttpObject {
     public var value: Value? { return getValue() }
     
     public var error: RMHttpError? { return getError() }
+}
+
+// Dictionary Response (JSON object)
+extension Dictionary:RMHttpProtocol {
+    public func getType() -> Dictionary<String, Any>.Type? {
+        return Dictionary<String, Any>.self
+    }
+    public typealias BaseObject = Dictionary<String, Any>
+}
+
+// Array Response (JSON Array)
+extension Array:RMHttpProtocol {
+    public func getType() -> [Dictionary<String, Any>].Type? {
+        return [Dictionary<String, Any>].self
+    }
+    public typealias BaseObject = [Dictionary<String, Any>]
+}
+
+// String Response (all Strings, e.g HTM string)
+extension String: RMHttpProtocol {
+    public func getType() -> String.Type? {
+        return String.self
+    }
+    public typealias BaseObject = String
 }

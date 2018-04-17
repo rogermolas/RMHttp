@@ -14,10 +14,15 @@ typealias RMHttpErrorRequest = (RMHttpError?) -> Swift.Void
 
 open class RMHttp {
 
+}
+
+// RESTful API Call
+extension RMHttp {
     class func request(completionHandler: @escaping RMHttpCompleteRequest,
                        errorHandler: @escaping RMHttpErrorRequest,
                        type: RMHttpType,
                        request: RMHttpRequest) {
+        
         RMHttpRequestManager.sharedManager.sendRequest(completionHandler: { (response) in
             
             if type == .object {
@@ -26,13 +31,12 @@ open class RMHttp {
                 print(object?.type ?? "Erroor")
             }
                 
-            
             else if type == .array {
                 let array = response?.JSONResponse(type: RMHttpType.array, value: JSONArray())
                 print(array?.value ?? "Erroor")
                 print(array?.type ?? "Erroor")
             }
-            
+                
             else {
                 let stringResponse = response?.StringResponse(encoding: .utf8)
                 print(stringResponse?.value ?? "Erroor")
@@ -40,21 +44,7 @@ open class RMHttp {
             }
         }, errorHandler: { (error) in
             errorHandler(error)
-        }, request: request)
-    }
-    
-    class func stringRequest(completionHandler: @escaping RMHttpCompleteString,
-                             errorHandler: @escaping RMHttpErrorRequest,
-                             request: RMHttpRequest) {
-        RMHttpRequestManager.sharedManager.sendRequest(completionHandler: { (response) in
-            let stringResponse = response?.StringResponse(encoding: .utf8)
-            if stringResponse != nil {
-                completionHandler(stringResponse?.value!)
-            } else {
-                errorHandler(RMHttpError())
-            }
-        }, errorHandler: { (error) in
-            errorHandler(error)
+            
         }, request: request)
     }
 }
