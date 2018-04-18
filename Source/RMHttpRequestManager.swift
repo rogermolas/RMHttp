@@ -25,10 +25,6 @@ open class RMHttpRequestManager {
     public func sendRequest(completionHandler: @escaping RMHttpParserComplete,
                             errorHandler: @escaping RMHttpParserError,
                             request: RMHttpRequest) {
-        queue.async {
-       
-        }
-        
         let parser = RMHttpParser()
         parser.delegate = self
         parser.parseWith(request: request,

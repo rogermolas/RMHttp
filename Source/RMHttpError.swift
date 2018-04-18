@@ -8,8 +8,11 @@
 
 import Foundation
 
+public var RMHttpErrorKey:UInt8 = 0
+
 open class RMHttpError {
     var domain: String? = nil
+    var reason: String? = nil
     var error: Error? = nil
     var request: RMHttpRequest? = nil
     var response: RMHttpResponse? = nil
@@ -27,24 +30,48 @@ open class RMHttpError {
     public func set(info:Dictionary<String, Any>) {
         self.info = info
     }
-}
-
-extension RMHttpError: RMHttpProtocol {
     
-    public func getType() -> RMHttpError.Type? {
-        return RMHttpError.self
+    public func setHttpResponse<T>(error: RMHttpParsingError<T>) {
+        var reason = ""
+        let type:String? = String(describing: T.getType())
+        switch error {
+        case .invalidData:
+            reason = "No data found : \(String(describing: response?.statusCode))"
+            break
+        case .invalidType:
+            reason = "\(type!) : Response type mismatch"
+            break
+        case .noData:
+            reason = "Failed \(type!) : Status: \(String(describing: response?.url?.absoluteString)) : \(String(describing: response?.statusCode!))"
+            break
+        case .unknown:
+            reason = "Unknown Error <\(type!)>"
+            break
+        }
+        self.reason = reason
     }
-    
-    public typealias BaseObject = RMHttpError
 }
-
 
 extension RMHttpError: CustomStringConvertible {
     public var description: String {
-        return """
-        Domain: \(domain ?? "Unknown")
-        Debug Description: \(error.debugDescription)
-        Request: \(String(describing: request))
-        """
+        
+        var desc: [String] = []
+        
+        if let mDomain = domain {
+            desc.append(mDomain)
+        }
+        
+        if let mReason = reason {
+            desc.append(mReason)
+        }
+        
+        if let mError = error {
+            desc.append(mError.localizedDescription)
+        }
+        
+        if let mRequest = request {
+            desc.append(mRequest.description)
+        }
+        return desc.joined(separator: " : ")
     }
 }

@@ -105,9 +105,7 @@ open class RMHttpParser: NSObject {
 // MARK - URLSessionDataDelegate
 extension RMHttpParser: URLSessionDataDelegate {
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        print(data ?? "No data")
         self.receiveData?.append(data)
-       
     }
     
     // MARK: Start recieving response
@@ -115,7 +113,9 @@ extension RMHttpParser: URLSessionDataDelegate {
         let response = response as? HTTPURLResponse
         self.initializeResponseTime = CFAbsoluteTimeGetCurrent()
         
+        // initial current response
         self.currentResponse = RMHttpResponse()
+        self.currentResponse?.url = response?.url
         self.currentResponse?.httpResponse = response
         self.currentResponse?.statusCode = response?.statusCode
         self.currentResponse?.allHeaders = response?.allHeaderFields
@@ -125,15 +125,17 @@ extension RMHttpParser: URLSessionDataDelegate {
             self.isError = true
             self.endTime = CFAbsoluteTimeGetCurrent()
             self.setTimeline()
+            
+            // Add error object into response object
             let responseError = RMHttpError()
             responseError.response = self.currentResponse
             responseError.request = self.currentRequest
-            
             self.parserErrorHandler!(responseError)
             self.delegate?.rmParserDidFail(self, error: responseError)
             completionHandler(.cancel)
         }
         
+        // Initialize data
         if self.receiveData != nil { self.receiveData = nil }
         self.receiveData = NSMutableData()
         self.receiveData?.length = 0
@@ -147,18 +149,18 @@ extension RMHttpParser: URLSessionTaskDelegate {
         self.endTime = CFAbsoluteTimeGetCurrent()
         /** Spawn output to main queue */
         DispatchQueue.main.async {
+             self.setTimeline() // Set response end time
             // Callback on Error
             guard error == nil else {
                 self.isError = true
-                self.setTimeline()
                 let responseError = RMHttpError(error: error!)
                 self.parserErrorHandler!(responseError)
                 self.delegate?.rmParserDidFail(self, error: responseError)
                 return
             }
+            
             if self.receiveData != nil && self.receiveData!.length > 0 {
                 self.currentResponse?.data = self.receiveData!
-                self.setTimeline()
             }
             self.parserSuccessHandler!(self.currentResponse)
             self.delegate?.rmParserDidfinished(self)

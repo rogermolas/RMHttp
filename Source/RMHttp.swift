@@ -27,20 +27,17 @@ extension RMHttp {
             
             if type == .object {
                 let object = response?.JSONResponse(type: RMHttpType.object, value: JSONObject())
-                print(object?.value ?? "Erroor")
-                print(object?.type ?? "Erroor")
+                print(object?.value ?? "\(String(describing: object!.error))")
             }
                 
             else if type == .array {
                 let array = response?.JSONResponse(type: RMHttpType.array, value: JSONArray())
-                print(array?.value ?? "Erroor")
-                print(array?.type ?? "Erroor")
+                print(array?.value ?? "\(String(describing: array!.error))")
             }
                 
             else {
                 let stringResponse = response?.StringResponse(encoding: .utf8)
-                print(stringResponse?.value ?? "Erroor")
-                print(stringResponse?.type ?? "Erroor")
+                print(stringResponse?.value ?? "\(String(describing: stringResponse!.error))")
             }
         }, errorHandler: { (error) in
             errorHandler(error)

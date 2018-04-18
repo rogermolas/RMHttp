@@ -16,7 +16,6 @@ public enum RMHttpType: String {
     case object = "JSONObject"
     case array = "JSONArray"
     case string = "String"
-    
 }
 
 // Status code that do not contain response data.
@@ -28,7 +27,6 @@ open class RMHttpResponse {
     public var statusCode: Int!
     public var allHeaders: [AnyHashable : Any]!
     public var httpResponse: HTTPURLResponse? = nil
-    public var isSuccess: Bool = false
     public var timeline: RMHttpTime = RMHttpTime()
     
     public var currentType: RMHttpType!
@@ -36,10 +34,16 @@ open class RMHttpResponse {
     public init() { }
     
     // Serialize JSON response
-    public func JSONResponse<T>(type:RMHttpType, value: T) -> RMHttpObject<T> {
+    public func JSONResponse<T:RMHttpProtocol>(type:RMHttpType, value: T) -> RMHttpObject<T> {
         currentType = type // reference the type
         
-        guard self.data != nil else { return .error(RMHttpError())}
+        // Check if status code success but no response
+        if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
+            let error = RMHttpError()
+            error.setHttpResponse(error: RMHttpParsingError.noData(NSNull()))
+            error.response = self
+            return .error(error)
+        }
         
         switch type {
         case .object:
@@ -47,15 +51,17 @@ open class RMHttpResponse {
             if data.isSuccess {
                 return data as! RMHttpObject<T>
             }
-            return RMHttpObject.error(RMHttpError())
+            return .error(data.error!)
+        
         case .array:
             let data =  httpJSONResponseArray(expected: [Dictionary<String, Any>()])
             if data.isSuccess {
                 return data as! RMHttpObject<T>
             }
-            return RMHttpObject.error(RMHttpError())
+            return .error(data.error!)
+        
         default:
-            return RMHttpObject.error(RMHttpError())
+            return .error(RMHttpError())
         }
     }
     
@@ -76,10 +82,13 @@ extension RMHttpResponse {
             if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
                 return .success(object)
             } else {
-                return .error(RMHttpError())
+                let error = RMHttpError()
+                error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
+                return .error(error)
             }
         } catch let error {
-            return .error(RMHttpError(error: error))
+            let error = RMHttpError(error: error)
+            return .error(error)
         }
     }
     
@@ -91,10 +100,13 @@ extension RMHttpResponse {
             if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
                 return .success(object)
             } else {
-                return .error(RMHttpError())
+                let error = RMHttpError()
+                error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
+                return .error(error)
             }
         } catch let error {
-            return RMHttpObject.error(RMHttpError(error: error))
+            let error = RMHttpError(error: error)
+            return .error(error)
         }
     }
     
@@ -104,32 +116,28 @@ extension RMHttpResponse {
         if let string:String = String(data:self.data! as Data, encoding: encoding!) {
             return .success(string)
         }
-        return .error(RMHttpError())
+        let error = RMHttpError()
+        error.setHttpResponse(error: RMHttpParsingError.invalidType(String()))
+        return .error(error)
     }
-}
-
-extension RMHttpResponse: RMHttpObjectAcceptable {
-    public func set(object: String?) {
-        
-    }
-    
-    public func getValue() -> String? {
-        return nil
-    }
-    
-    public func getError() -> RMHttpError? {
-        return nil
-    }
-    
-    public typealias SerializedObject = String
-    
 }
 
 extension RMHttpResponse: CustomStringConvertible {
     public var description: String {
-        return """
-        Headers: \(allHeaders!),
-        Status: \(statusCode!)
-        """
+        
+        var desc: [String] = []
+        
+        if let headers = allHeaders {
+            desc.append("\(headers)")
+        }
+        
+        if let status = statusCode {
+            desc.append("\(status)")
+        }
+        
+        if let urlRequest = url {
+            desc.append("\(urlRequest)")
+        }        
+        return desc.joined(separator: " : ")
     }
 }

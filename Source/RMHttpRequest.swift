@@ -17,8 +17,9 @@ public enum RMHttpMethod: String {
 }
 
 open class RMHttpRequest {
-    public var urlRequest: URLRequest
-    public var parameters: [String:String] = [String:String]()
+    public var urlRequest: URLRequest!
+    public var parameters: [String:String]!
+    public var allHeaders: [String:String]!
     public var sessionConfig:URLSessionConfiguration!
     public var restrictStatusCodes:Set<Int> = []  // e.g 404, 500, return Error
     
@@ -64,8 +65,6 @@ open class RMHttpRequest {
     // Setters
     public func set(parameters: [String : String]!) {
        self.parameters = parameters
-        //let method = RMHttpMethod(rawValue: urlRequest.httpMethod ?? RMHttpMethod.GET.rawValue)
-                
     }
     
     public func setHttp(method: RMHttpMethod) {
@@ -73,6 +72,7 @@ open class RMHttpRequest {
     }
     
     public func setHttp(hearders: [String : String]!){
+        self.allHeaders = hearders
         self.urlRequest.allHTTPHeaderFields = hearders
     }
     
@@ -87,9 +87,20 @@ open class RMHttpRequest {
 
 extension RMHttpRequest: CustomStringConvertible {
     public var description: String {
-        return """
-        URL : \(String(describing: self.urlRequest.url))
-        Parameters : \(self.parameters)
-        """
+        var desc: [String] = []
+        
+        if let request = urlRequest {
+            desc.append("\(String(describing: request.url?.absoluteString))")
+        }
+        
+        if let mParameters = parameters {
+            desc.append("\(mParameters)")
+        }
+        
+        if let mAllHeaders = allHeaders {
+            desc.append("\(mAllHeaders)")
+        }
+        
+        return desc.joined(separator: " : ")
     }
 }
