@@ -8,13 +8,23 @@
 
 import Foundation
 
+private enum HeaderField: String {
+    case contentType = "Content-Type"
+}
+
+private enum HeaderValue: String {
+    case JSON = "application/json"
+    case urlEncoded = "application/x-www-form-urlencoded; charset=utf-8"
+}
+
 open class RMHttpBuilder {
     
-    public func buil(request: URLRequest?,
-                     parameter: [String:String]?,
-                     method: RMHttpMethod) -> URLRequest {
-        
+    public func build(request: URLRequest?,
+                      parameter: [String:String]?,
+                      method: RMHttpMethod) -> URLRequest {
         var mUrlRequest = request
+        
+        // Default Encoding
         if encodeParametersInUlr(method: method) {
             mUrlRequest = buildQuery(request!, parameters: parameter!)
         } else {
@@ -39,38 +49,38 @@ open class RMHttpBuilder {
         return escapedString!
     }
     
+    //MARK:- Default Encoding
     // GET, DELETE
-    public func buildQuery(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
+    private func buildQuery(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
         var mUrlRequest = urlRequest
         let paramString = build(parameters)
         var component = URLComponents(url: mUrlRequest.url!, resolvingAgainstBaseURL: false)
         component?.percentEncodedQuery = paramString
-        
-        if mUrlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
-            mUrlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if mUrlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
+            mUrlRequest.setValue(HeaderValue.JSON.rawValue, forHTTPHeaderField: HeaderField.contentType.rawValue)
         }
         mUrlRequest.url = component?.url
         return mUrlRequest
     }
     
     // POST, PUT, PATCH
-    public func buildHttpBodyQuery(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
+    private func buildHttpBodyQuery(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
         var mUrlRequest = urlRequest
         let paramString = build(parameters)
-        if mUrlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
-            mUrlRequest.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        if mUrlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
+            mUrlRequest.setValue(HeaderValue.urlEncoded.rawValue, forHTTPHeaderField: HeaderField.contentType.rawValue)
         }
         mUrlRequest.httpBody = paramString.data(using: .utf8, allowLossyConversion: false)
         return mUrlRequest
     }
     
-    // JSON Encoding
-    public func buildJSONHttpBody(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
+    // JSON Data Encoding
+    private func buildJSONHttpBody(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
         var mUrlRequest = urlRequest
         do {
             let data = try JSONSerialization.data(withJSONObject: parameters, options: .sortedKeys)
-            if mUrlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
-                mUrlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            if mUrlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
+                mUrlRequest.setValue(HeaderValue.JSON.rawValue, forHTTPHeaderField: HeaderField.contentType.rawValue)
             }
             mUrlRequest.httpBody = data
         } catch {
