@@ -18,6 +18,7 @@ public enum RMHttpMethod: String {
 
 open class RMHttpRequest {
     public var urlRequest: URLRequest!
+    public var url: URL!
     public var parameters: [String:String]!
     public var allHeaders: [String:String]!
     public var sessionConfig:URLSessionConfiguration!
@@ -37,36 +38,27 @@ open class RMHttpRequest {
     
     public init(urlString: String,
                 method: RMHttpMethod,
-                parameters: [String : String]!) {
-        
-        let url = URL(string: urlString)
-        self.urlRequest = URLRequest(url: url!)
-        
-        self.setHttp(method: method)
-        self.set(parameters: parameters)
-        defaulSessionConfig()
-    }
-    
-    public init(urlString: String,
-                method: RMHttpMethod,
                 parameters: [String : String]!,
                 hearders: [String : String]!) {
         
-        let url = URL(string: urlString)
+        self.url = URL(string: urlString)
         self.urlRequest = URLRequest(url: url!)
         self.setHttp(method: method)
         self.setHttp(hearders: hearders)
+        self.set(parameters: parameters)
         defaulSessionConfig()
     }
     
     // -
     public init(url: URL) {
+        self.url = url
         self.urlRequest = URLRequest(url: url)
         defaulSessionConfig()
     }
     
     // Url cachePolicy
     public init(url: URL, cachePolicy: URLRequest.CachePolicy, timeoutInterval: TimeInterval) {
+        self.url = url
         self.urlRequest = URLRequest(url: url, cachePolicy: cachePolicy, timeoutInterval: timeoutInterval)
         defaulSessionConfig()
     }
@@ -74,10 +66,9 @@ open class RMHttpRequest {
     // Set and append parameters to base URL
     public func set(parameters: [String : String]!) {
         self.parameters = parameters
-        let paramString = RMHttpBuilder().build(parameters)
-        var component = URLComponents(url: urlRequest.url!, resolvingAgainstBaseURL: false)
-        component?.percentEncodedQuery = paramString
-        urlRequest.url = component?.url
+        let method = RMHttpMethod(rawValue: urlRequest.httpMethod!)!
+        let request = RMHttpBuilder().buil(request: urlRequest, parameter: parameters, method: method)
+        self.urlRequest = request
     }
     
     // Assign http Method
