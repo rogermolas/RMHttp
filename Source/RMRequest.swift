@@ -8,15 +8,7 @@
 
 import Foundation
 
-public enum RMHttpMethod: String {
-    case GET        = "GET"
-    case POST       = "POST"
-    case DELETE     = "DELETE"
-    case PATCH      = "PATCH"
-    case PUT        = "PUT"
-}
-
-open class RMHttpRequest {
+open class RMRequest {
     public var urlRequest: URLRequest!
     public var url: URL!
     public var parameters: [String:String]!
@@ -37,7 +29,7 @@ open class RMHttpRequest {
     }
     
     public init(urlString: String,
-                method: RMHttpMethod,
+                method: RMHttpMethod<Encoding>,
                 parameters: [String : String]!,
                 hearders: [String : String]!) {
         
@@ -45,7 +37,7 @@ open class RMHttpRequest {
         self.urlRequest = URLRequest(url: url!)
         self.setHttp(method: method)
         self.setHttp(hearders: hearders)
-        self.set(parameters: parameters)
+        self.set(parameters: parameters, method: method)
         defaulSessionConfig()
     }
     
@@ -64,16 +56,15 @@ open class RMHttpRequest {
     }
     
     // Set and append parameters to base URL
-    public func set(parameters: [String : String]!) {
+    public func set(parameters: [String : String]!, method: RMHttpMethod<Encoding>) {
         self.parameters = parameters
-        let method = RMHttpMethod(rawValue: urlRequest.httpMethod!)!
-        let request = RMHttpBuilder().buil(request: urlRequest, parameter: parameters, method: method)
+        let request = RMBuilder().build(request: urlRequest, parameter: parameters, method: method)
         self.urlRequest = request
     }
     
     // Assign http Method
-    public func setHttp(method: RMHttpMethod) {
-        self.urlRequest.httpMethod = method.rawValue
+    public func setHttp(method: RMHttpMethod<Encoding>) {
+        self.urlRequest.httpMethod = method.httpMethod
     }
     
     // Assign all headers
@@ -97,7 +88,7 @@ open class RMHttpRequest {
     }
 }
 
-extension RMHttpRequest: CustomStringConvertible {
+extension RMRequest: CustomStringConvertible {
     public var description: String {
         var desc: [String] = []
         if let request = urlRequest {

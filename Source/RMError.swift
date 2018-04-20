@@ -10,21 +10,21 @@ import Foundation
 
 public var RMHttpErrorKey:UInt8 = 0
 
-open class RMHttpError {
+open class RMError {
     var domain: String? = nil
     var reason: String? = nil
     var error: Error? = nil
-    var request: RMHttpRequest? = nil
-    var response: RMHttpResponse? = nil
+    var request: RMRequest? = nil
+    var response: RMResponse? = nil
     var info:Dictionary<String, Any> = Dictionary<String, Any>()
     
     public init(error: Error) {
-        self.domain = "com.RMHttpError.response"
+        self.domain = "com.RMError.response"
         self.error = error
     }
     
     public init() {
-        self.domain = "com.RMHttpError.response"
+        self.domain = "com.RMError.response"
     }
     
     public func set(info:Dictionary<String, Any>) {
@@ -52,23 +52,18 @@ open class RMHttpError {
     }
 }
 
-extension RMHttpError: CustomStringConvertible {
+extension RMError: CustomStringConvertible {
     public var description: String {
-        
         var desc: [String] = []
-        
         if let mDomain = domain {
             desc.append(mDomain)
         }
-        
         if let mReason = reason {
             desc.append(mReason)
         }
-        
         if let mError = error {
             desc.append(mError.localizedDescription)
         }
-        
         if let mRequest = request {
             desc.append(mRequest.description)
         }

@@ -1,5 +1,5 @@
 //
-//  RMHttpBuilder.swift
+//  RMBuilder.swift
 //  RMHttp
 //
 //  Created by Roger Molas on 12/04/2018.
@@ -17,18 +17,21 @@ private enum HeaderValue: String {
     case urlEncoded = "application/x-www-form-urlencoded; charset=utf-8"
 }
 
-open class RMHttpBuilder {
+open class RMBuilder {
     
     public func build(request: URLRequest?,
                       parameter: [String:String]?,
-                      method: RMHttpMethod) -> URLRequest {
+                      method: RMHttpMethod<Encoding>) -> URLRequest {
         var mUrlRequest = request
-        
-        // Default Encoding
-        if encodeParametersInUlr(method: method) {
-            mUrlRequest = buildQuery(request!, parameters: parameter!)
-        } else {
-            mUrlRequest = buildHttpBodyQuery(request!, parameters: parameter!)
+        if method.encoding == .URLEncoding { // URL Default
+            // Default Encoding
+            if encodeParametersInUlr(method: method) {
+                mUrlRequest = buildQuery(request!, parameters: parameter!)
+            } else {
+                mUrlRequest = buildHttpBodyQuery(request!, parameters: parameter!)
+            }
+        } else { // JSON Body
+            mUrlRequest = buildJSONHttpBody(request!, parameters: parameter!)
         }
         return mUrlRequest!
     }
@@ -49,8 +52,7 @@ open class RMHttpBuilder {
         return escapedString!
     }
     
-    //MARK:- Default Encoding
-    // GET, DELETE
+    //MARK:- Parameters Encoding (GET, DELETE)
     private func buildQuery(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
         var mUrlRequest = urlRequest
         let paramString = build(parameters)
@@ -63,7 +65,7 @@ open class RMHttpBuilder {
         return mUrlRequest
     }
     
-    // POST, PUT, PATCH
+    //MARK:- Parameters Encoding (POST, PUT, PATCH)
     private func buildHttpBodyQuery(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
         var mUrlRequest = urlRequest
         let paramString = build(parameters)
@@ -89,10 +91,10 @@ open class RMHttpBuilder {
         return urlRequest
     }
     
-    // Encode value to RFC
-    private func encodeParametersInUlr(method: RMHttpMethod) -> Bool {
-        switch method {
-        case .GET, .DELETE:
+    // Check if parameters encoded to HttpBody or within URL
+    private func encodeParametersInUlr(method: RMHttpMethod<Encoding>) -> Bool {
+        switch method.httpMethod {
+        case "GET", "DELETE":
             return true
         default:
             return false

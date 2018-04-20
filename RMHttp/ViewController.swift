@@ -28,7 +28,15 @@ class ViewController: UIViewController {
             "bonus_id" : "eeee dedwe"
         ]
         
-        let request = RMHttpRequest(urlString: "http://35.201.183.109:1341/api/gameNav", method: .POST, parameters: params, hearders: nil)
+        let request = RMRequest(urlString: "http://35.201.183.109:1341/api/gameNav",
+                                    method: RMHttpMethod.POST(.URLEncoding),
+                                    parameters: params,
+                                    hearders: nil)
+        
+//        let request = RMHttpRequest(urlString: "http://35.201.183.109:1341/api/gameNav",
+//                                    method: ,
+//                                    parameters: params,
+//                                    hearders: nil)
         RMHttp.request(completionHandler: { (response) in
 
             

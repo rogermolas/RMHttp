@@ -8,9 +8,9 @@
 
 import Foundation
 
-open class RMHttpRequestManager {
+open class RMRequestManager {
     
-    static let sharedManager = RMHttpRequestManager() // Single shared instance
+    static let sharedManager = RMRequestManager() // Single shared instance
     
     private var requestList: NSMutableArray = NSMutableArray()  // Holds all request objects
     
@@ -24,8 +24,8 @@ open class RMHttpRequestManager {
     // MARK: - Public request
     public func sendRequest(completionHandler: @escaping RMHttpParserComplete,
                             errorHandler: @escaping RMHttpParserError,
-                            request: RMHttpRequest) {
-        let parser = RMHttpParser()
+                            request: RMRequest) {
+        let parser = RMParser()
         parser.delegate = self
         parser.parseWith(request: request,
                          completionHandler: completionHandler,
@@ -35,21 +35,21 @@ open class RMHttpRequestManager {
     // MARK: Stop all requests
     public func stopAllRequest() {
         requestList.enumerateObjects({ (parser, index, isFinished) in
-            (parser as? RMHttpParser)?.cancel()
+            (parser as? RMParser)?.cancel()
         })
     }
 }
 
 // MARK - RMParserDelegate
-extension RMHttpRequestManager: RMHttpParserDelegate {
-    public func rmParserDidfinished(_ parser: RMHttpParser) {
+extension RMRequestManager: RMHttpParserDelegate {
+    public func rmParserDidfinished(_ parser: RMParser) {
         if stopAllRequestOnFailure {
             stopAllRequest()
         }
         requestList.remove(parser)
     }
     
-    public func rmParserDidCancel(_ parser: RMHttpParser) {
+    public func rmParserDidCancel(_ parser: RMParser) {
         if parser.isCancel {
             requestList.remove(parser)
         }
@@ -59,7 +59,7 @@ extension RMHttpRequestManager: RMHttpParserDelegate {
         }
     }
     
-    public func rmParserDidFail(_ parser: RMHttpParser, error: RMHttpError?) {
+    public func rmParserDidFail(_ parser: RMParser, error: RMError?) {
         if parser.isError {
             requestList.remove(parser)
         }

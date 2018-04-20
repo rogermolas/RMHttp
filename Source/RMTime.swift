@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct RMHttpTime {
+public struct RMTime {
     public let requestTime: CFAbsoluteTime
     public let initialResponseTime: CFAbsoluteTime
     public let requestCompletionTime: CFAbsoluteTime

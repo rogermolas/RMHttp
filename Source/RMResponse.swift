@@ -9,10 +9,10 @@
 import Foundation
 
 // JSON Type (Object or Array)
-typealias JSONObject = Dictionary<String, Any>
-typealias JSONArray = [Dictionary<String, Any>]
+public typealias JSONObject = Dictionary<String, Any>
+public typealias JSONArray = [Dictionary<String, Any>]
 
-public enum RMHttpType: String {
+public enum RMResponseType: String {
     case object = "JSONObject"
     case array = "JSONArray"
     case string = "String"
@@ -21,25 +21,25 @@ public enum RMHttpType: String {
 // Status code that do not contain response data.
 private let successStatusCodes: Set<Int> = [204, 205]
 
-open class RMHttpResponse {
+open class RMResponse {
     public var data: NSMutableData? = nil
     public var url: URL? = nil
     public var statusCode: Int!
     public var allHeaders: [AnyHashable : Any]!
     public var httpResponse: HTTPURLResponse? = nil
-    public var timeline: RMHttpTime = RMHttpTime()
+    public var timeline: RMTime = RMTime()
     
-    public var currentType: RMHttpType!
+    public var currentType: RMResponseType!
    
     public init() { }
     
     // Serialize JSON response
-    public func JSONResponse<T:RMHttpProtocol>(type:RMHttpType, value: T) -> RMHttpObject<T> {
+    public func JSONResponse<T:RMHttpProtocol>(type:RMResponseType, value: T) -> RMHttpObject<T> {
         currentType = type // reference the type
         
         // Check if status code success but no response
         if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
-            let error = RMHttpError()
+            let error = RMError()
             error.setHttpResponse(error: RMHttpParsingError.noData(NSNull()))
             error.response = self
             return .error(error)
@@ -61,7 +61,7 @@ open class RMHttpResponse {
             return .error(data.error!)
         
         default:
-            return .error(RMHttpError())
+            return .error(RMError())
         }
     }
     
@@ -72,7 +72,7 @@ open class RMHttpResponse {
 }
 
 // Private Operations
-extension RMHttpResponse {
+extension RMResponse {
     
     // JSON Object
     private func httpJSONResponseObject<T>(expected: T) -> RMHttpObject<T> {
@@ -82,12 +82,12 @@ extension RMHttpResponse {
             if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
                 return .success(object)
             } else {
-                let error = RMHttpError()
+                let error = RMError()
                 error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
                 return .error(error)
             }
         } catch let error {
-            let error = RMHttpError(error: error)
+            let error = RMError(error: error)
             return .error(error)
         }
     }
@@ -100,12 +100,12 @@ extension RMHttpResponse {
             if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
                 return .success(object)
             } else {
-                let error = RMHttpError()
+                let error = RMError()
                 error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
                 return .error(error)
             }
         } catch let error {
-            let error = RMHttpError(error: error)
+            let error = RMError(error: error)
             return .error(error)
         }
     }
@@ -116,25 +116,21 @@ extension RMHttpResponse {
         if let string:String = String(data:self.data! as Data, encoding: encoding!) {
             return .success(string)
         }
-        let error = RMHttpError()
+        let error = RMError()
         error.setHttpResponse(error: RMHttpParsingError.invalidType(String()))
         return .error(error)
     }
 }
 
-extension RMHttpResponse: CustomStringConvertible {
+extension RMResponse: CustomStringConvertible {
     public var description: String {
-        
         var desc: [String] = []
-        
         if let headers = allHeaders {
             desc.append("\(headers)")
         }
-        
         if let status = statusCode {
             desc.append("\(status)")
         }
-        
         if let urlRequest = url {
             desc.append("\(urlRequest)")
         }        

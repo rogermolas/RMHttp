@@ -1,5 +1,5 @@
 //
-//  RMHttpDataTypes.swift
+//  RMHttpCommons.swift
 //  RMHttp
 //
 //  Created by Roger Molas on 17/04/2018.
@@ -14,7 +14,7 @@ public protocol RMHttpProtocol {
     
     static func getType() -> BaseObject.Type
     
-    static func internalError() -> RMHttpError?
+    static func internalError() -> RMError?
 }
 
 // Response object protocol
@@ -25,10 +25,47 @@ public protocol RMHttpObjectAcceptable {
     
     func getValue() -> SerializedObject?
     
-    func getError() -> RMHttpError? // Http Error value)
+    func getError() -> RMError? // Http Error value)
 }
 
-// Data Parsing Problems
+// HTTP parameters Encoding
+public enum Encoding: String {
+    case URLEncoding = "URLEncoding"
+    case JSONEncoding = "JSONEncoding"
+}
+
+// HTTP Methods
+public enum RMHttpMethod<Encoder> {
+    case GET(Encoder)
+    case POST(Encoder)
+    case DELETE(Encoder)
+    case PUT(Encoder)
+    case PATCH(Encoder)
+    
+    // Parameters Encoding
+    public var encoding: Encoder {
+        switch self {
+            case .GET (let encoder): return encoder
+            case .POST(let encoder): return encoder
+            case .DELETE(let encoder): return encoder
+            case .PATCH(let encoder): return encoder
+            case .PUT(let encoder): return encoder
+        }
+    }
+    
+    // HTTP Methods
+    public var httpMethod: String {
+        switch self {
+            case .GET:return "GET"
+            case .POST: return "POST"
+            case .DELETE: return "DELETE"
+            case .PATCH: return "PATCH"
+            case .PUT: return "PUT"
+        }
+    }
+}
+
+// Data parsing problems
 public enum RMHttpParsingError<TYPE:RMHttpProtocol> {
     case invalidType(TYPE)
     case noData(TYPE)
@@ -41,7 +78,7 @@ public enum RMHttpObject<Value:RMHttpProtocol> : RMHttpObjectAcceptable {
     public typealias SerializedObject = Value
     
     case success(Value)
-    case error(RMHttpError)
+    case error(RMError)
     
     public func getValue() -> Value? {
         switch self {
@@ -50,7 +87,7 @@ public enum RMHttpObject<Value:RMHttpProtocol> : RMHttpObjectAcceptable {
         }
     }
 
-    public func getError() -> RMHttpError? {
+    public func getError() -> RMError? {
         switch self {
             case .success: return nil
             case .error (let error): return error
@@ -73,14 +110,14 @@ public enum RMHttpObject<Value:RMHttpProtocol> : RMHttpObjectAcceptable {
 extension RMHttpObject {
     public var value: Value? { return getValue() }
     
-    public var error: RMHttpError? { return getError() }
+    public var error: RMError? { return getError() }
 }
 
 // Comply to RMHttp base object Protocol
 extension RMHttpObject : RMHttpProtocol {
     public typealias BaseObject = Value
     
-    public static func internalError() -> RMHttpError? {
+    public static func internalError() -> RMError? {
         return nil
     }
     
@@ -95,7 +132,7 @@ extension RMHttpObject : RMHttpProtocol {
 extension Dictionary:RMHttpProtocol {
     public typealias BaseObject = Dictionary<String, Any>
     
-    public static func internalError() -> RMHttpError? {
+    public static func internalError() -> RMError? {
         return nil
     }
 
@@ -108,7 +145,7 @@ extension Dictionary:RMHttpProtocol {
 extension Array:RMHttpProtocol {
     public typealias BaseObject = [Dictionary<String, Any>]
     
-    public static func internalError() -> RMHttpError? {
+    public static func internalError() -> RMError? {
         return nil
     }
     
@@ -121,7 +158,7 @@ extension Array:RMHttpProtocol {
 extension String: RMHttpProtocol {
     public typealias BaseObject = String
     
-    public static func internalError() -> RMHttpError? {
+    public static func internalError() -> RMError? {
         return nil
     }
     
@@ -131,22 +168,22 @@ extension String: RMHttpProtocol {
 }
 
 // Error Response (All error)
-extension RMHttpError: RMHttpProtocol {
-    public typealias BaseObject = RMHttpError
+extension RMError: RMHttpProtocol {
+    public typealias BaseObject = RMError
     
-    public static func internalError() -> RMHttpError? {
+    public static func internalError() -> RMError? {
         return nil
     }
     
-    public static func getType() -> RMHttpError.Type {
-        return RMHttpError.self
+    public static func getType() -> RMError.Type {
+        return RMError.self
     }
 }
 
 extension NSNull: RMHttpProtocol {
     public typealias BaseObject = NSNull
     
-    public static func internalError() -> RMHttpError? {
+    public static func internalError() -> RMError? {
         return nil
     }
     
