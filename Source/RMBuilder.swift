@@ -20,9 +20,11 @@ private enum HeaderValue: String {
 open class RMBuilder {
     
     public func build(request: URLRequest?,
-                      parameter: [String:String]?,
+                      parameter: [String: Any]?,
                       method: RMHttpMethod<Encoding>) -> URLRequest {
         var mUrlRequest = request
+        guard parameter != nil else { return mUrlRequest! }
+        
         if method.encoding == .URLEncoding { // URL Default
             // Default Encoding
             if encodeParametersInUlr(method: method) {
@@ -37,23 +39,29 @@ open class RMBuilder {
     }
     
     // MARK: Build URL parameters
-    private func build(_ parameters: [String: String]) -> String {
+    private func build(_ parameters: [String: Any]) -> String {
         var components: [String] = []
         for key in parameters.keys.sorted(by: <) {
             let value = parameters[key]!
-            components += ["\(key)=\(encodeValue(fromString: value)!)"]
+            components += ["\(key)=\(encodeParameter(value: value)!)"]
         }
         return components.joined(separator: "&")
     }
     
     // MARK: Encode parameter value
-    private func encodeValue(fromString:String) -> String! {
-        let escapedString = fromString.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+    private func encodeParameter(value: Any) -> String! {
+        var mValue: String
+        if let bool = value as? Bool  {
+            mValue = bool ? "1" : "0"
+        } else {
+            mValue = "\(value)"
+        }
+        let escapedString = mValue.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
         return escapedString!
     }
     
     //MARK:- Parameters Encoding (GET, DELETE)
-    private func buildQuery(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
+    private func buildQuery(_ urlRequest: URLRequest, parameters: [String: Any]) -> URLRequest? {
         var mUrlRequest = urlRequest
         let paramString = build(parameters)
         var component = URLComponents(url: mUrlRequest.url!, resolvingAgainstBaseURL: false)
@@ -66,7 +74,7 @@ open class RMBuilder {
     }
     
     //MARK:- Parameters Encoding (POST, PUT, PATCH)
-    private func buildHttpBodyQuery(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
+    private func buildHttpBodyQuery(_ urlRequest: URLRequest, parameters: [String:Any]) -> URLRequest? {
         var mUrlRequest = urlRequest
         let paramString = build(parameters)
         if mUrlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
@@ -77,7 +85,7 @@ open class RMBuilder {
     }
     
     // JSON Data Encoding
-    private func buildJSONHttpBody(_ urlRequest: URLRequest, parameters: [String:String]) -> URLRequest? {
+    private func buildJSONHttpBody(_ urlRequest: URLRequest, parameters: [String:Any]) -> URLRequest? {
         var mUrlRequest = urlRequest
         do {
             let data = try JSONSerialization.data(withJSONObject: parameters, options: .sortedKeys)

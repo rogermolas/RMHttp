@@ -14,8 +14,6 @@ open class RMRequestManager {
     
     private var requestList: NSMutableArray = NSMutableArray()  // Holds all request objects
     
-    private let queue = DispatchQueue(label: "com.RMHttp.request.started")
-    
     var stopAllRequestOnFailure = false
     
     // MARK: Dealloc objects

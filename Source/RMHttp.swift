@@ -8,37 +8,45 @@
 
 import Foundation
 
-typealias RMHttpCompleteRequest = (RMResponse) -> Swift.Void
-typealias RMHttpCompleteString = (String?) -> Swift.Void
-typealias RMHttpErrorRequest = (RMError?) -> Swift.Void
-
-open class RMHttp {
-
-}
+open class RMHttp { }
 
 // RESTful API Call
 extension RMHttp {
-    class func request(completionHandler:@escaping RMHttpCompleteRequest,
-                       errorHandler: @escaping RMHttpErrorRequest,
-                       type: RMResponseType,
-                       request: RMRequest) {
-        
-        RMRequestManager.sharedManager.sendRequest(completionHandler: { (response) in
-            
-//            response?.statusCode
-            if type == .object {
+    
+    static let requestManager = RMRequestManager.sharedManager
+    
+    class func request<T:RMHttpProtocol>(completionHandler: @escaping (_ data: T?) -> Swift.Void,
+                                         errorHandler: @escaping (_ error: RMError?) -> Swift.Void,
+                                         request: RMRequest) {
+        requestManager.sendRequest(completionHandler: { (response) in
+            // JSON Object
+            if (T.getType() == JSONObject.getType()) {
                 let object = response?.JSONResponse(type: .object, value: JSONObject())
-               print(object?.value ?? "\(String(describing: object!.error))")
-            
-            } else if type == .array {
+                if object?.value != nil {
+                    completionHandler((object?.value as! T))
+                } else {
+                    errorHandler(object?.error)
+                }
+            // JSON Array
+            } else if (T.getType() == JSONArray.getType()) {
                 let array = response?.JSONResponse(type: .array, value: JSONArray())
-                print(array?.value ?? "\(String(describing: array!.error))")
+                if array?.value != nil {
+                    completionHandler((array?.value as! T))
+                } else {
+                    errorHandler(array?.error)
+                }
             
             } else {
-                let stringResponse = response?.StringResponse(encoding: .utf8)
-                print(stringResponse?.value ?? "\(String(describing: stringResponse!.error))")
+                // Other Response
+                if (T.getType() == String.getType()) {
+                    let stringResponse = response?.StringResponse(encoding: .utf8)
+                    if stringResponse?.value != nil {
+                        completionHandler((stringResponse?.value as! T))
+                    } else {
+                        errorHandler(stringResponse?.error)
+                    }
+                }
             }
-        
         }, errorHandler: { (error) in // contains RMHttpError object
             errorHandler(error)
         

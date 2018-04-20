@@ -56,7 +56,7 @@ extension RMError: CustomStringConvertible {
     public var description: String {
         var desc: [String] = []
         if let mDomain = domain {
-            desc.append(mDomain)
+            desc.append("\n\(mDomain)")
         }
         if let mReason = reason {
             desc.append(mReason)

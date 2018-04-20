@@ -9,10 +9,10 @@
 import Foundation
 
 open class RMRequest {
-    public var urlRequest: URLRequest!
-    public var url: URL!
-    public var parameters: [String:String]!
-    public var allHeaders: [String:String]!
+    public var urlRequest:URLRequest!
+    public var url:URL!
+    public var parameters:[String : Any]? = nil
+    public var allHeaders:[String : String]? = nil
     public var sessionConfig:URLSessionConfiguration!
     public var restrictStatusCodes:Set<Int> = []  // e.g 404, 500, return Error
     
@@ -30,7 +30,7 @@ open class RMRequest {
     
     public init(urlString: String,
                 method: RMHttpMethod<Encoding>,
-                parameters: [String : String]!,
+                parameters: [String : Any]!,
                 hearders: [String : String]!) {
         
         self.url = URL(string: urlString)
@@ -56,8 +56,8 @@ open class RMRequest {
     }
     
     // Set and append parameters to base URL
-    public func set(parameters: [String : String]!, method: RMHttpMethod<Encoding>) {
-        self.parameters = parameters
+    public func set(parameters: [String : Any]!, method: RMHttpMethod<Encoding>) {
+        self.parameters = (parameters != nil) ? parameters : [String:Any]()
         let request = RMBuilder().build(request: urlRequest, parameter: parameters, method: method)
         self.urlRequest = request
     }
