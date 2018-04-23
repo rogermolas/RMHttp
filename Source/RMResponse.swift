@@ -40,6 +40,7 @@ open class RMResponse {
         // Check if status code success but no response
         if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
             let error = RMError()
+            error.type = .StatusCode
             error.setHttpResponse(error: RMHttpParsingError.noData(NSNull()))
             error.response = self
             return .error(error)
@@ -61,7 +62,9 @@ open class RMResponse {
             return .error(data.error!)
         
         default:
-            return .error(RMError())
+            let error = RMError()
+            error.type = .Parsing
+            return .error(error)
         }
     }
     
@@ -79,15 +82,17 @@ extension RMResponse {
         let succesDictionary = ["success" : true] as! T
         if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success(succesDictionary)}
         do {
-            if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
+            if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {                
                 return .success(object)
             } else {
                 let error = RMError()
+                error.type = .Parsing
                 error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
                 return .error(error)
             }
         } catch let error {
             let error = RMError(error: error)
+            error.type = .Parsing
             return .error(error)
         }
     }
@@ -101,11 +106,13 @@ extension RMResponse {
                 return .success(object)
             } else {
                 let error = RMError()
+                error.type = .Parsing
                 error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
                 return .error(error)
             }
         } catch let error {
             let error = RMError(error: error)
+            error.type = .Parsing
             return .error(error)
         }
     }
@@ -117,6 +124,7 @@ extension RMResponse {
             return .success(string)
         }
         let error = RMError()
+        error.type = .Parsing
         error.setHttpResponse(error: RMHttpParsingError.invalidType(String()))
         return .error(error)
     }

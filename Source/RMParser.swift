@@ -128,6 +128,7 @@ extension RMParser: URLSessionDataDelegate {
             
             // Add error object into response object
             let responseError = RMError()
+            responseError.type = .StatusCode
             responseError.response = self.currentResponse
             responseError.request = self.currentRequest
             self.parserErrorHandler!(responseError)
@@ -154,6 +155,7 @@ extension RMParser: URLSessionTaskDelegate {
             guard error == nil else {
                 self.isError = true
                 let responseError = RMError(error: error!)
+                responseError.type = .SessionTask
                 self.parserErrorHandler!(responseError)
                 self.delegate?.rmParserDidFail(self, error: responseError)
                 return

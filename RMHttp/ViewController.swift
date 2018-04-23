@@ -9,47 +9,43 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    @IBOutlet weak var tableView: UITableView!
+    let list = ["GET", "POST", "DELETE", "STRING RESPONSE"]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-/*        let header = ["X-AUTH-TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHAiOnsidmVyc2lvbiI6IjEuMiIsImRldmljZUlkIjoiQjY3NkYxNUItRDk2OS00NDY4LUFBMkEtNkUxRTJCNzQ5ODE2IiwicGxhdGZvcm0iOiJpT1MiLCJzeXN0ZW1WZXJzaW9uIjoiMTEuMiIsImRldmljZU1vZGVsIjoiaVBob25lIn0sInRva2VuIjoiN2I4ZTE4YTM4NWFiZmVkOTIzMDI5ZmQ2ODQ0ZTI5NzA0MmI1MzM2ZSIsImxvZ2luTmFtZSI6IjAwMDAwdGVzdCJ9.kqiFkqfTazoSsU-FQuEI6UZYvDoIn6ujU7RPf2Qpspc"]
-*/
-//        let request = RMHttpRequest(urlString: "http://35.201.183.109:1341/api/gameNav", method: .GET, hearder: header)
-//        RMHttp.jsonRequest(completionHandler: { (s) in
-//
-//        }, errorHandler: { (error) in
-//
-//        }, request: request)
-        
-        let params = [
-            "platform_code" : "PT",
-            "amount" : "1 rree 23",
-            "bonus_id" : "eeee dedwe"
-        ]
-        
-        let request = RMRequest(urlString: "http://35.201.183.109:1341/api/gameNav",
-                                    method: RMHttpMethod.POST(.URLEncoding),
-                                    parameters: params,
-                                    hearders: nil)
-        
-//        let request = RMHttpRequest(urlString: "http://35.201.183.109:1341/api/gameNav",
-//                                    method: ,
-//                                    parameters: params,
-//                                    hearders: nil)
-        RMHttp.request(completionHandler: { (response) in
-
-            
-        }, errorHandler: { (error) in
-            
-        }, type: .array, request: request)
+        tableView.tableFooterView = UIView()
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let destination = segue.destination as? DestinationViewController {
+            if let type = sender as? String {
+                destination.type = type
+            }
+        }
     }
-
-
 }
 
+extension ViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return list.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        cell.textLabel?.text = list[indexPath.row]
+        return cell
+    }
+}
+
+extension ViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let type = list[indexPath.row]
+        self.performSegue(withIdentifier: "details segue", sender: type)
+    }
+}
