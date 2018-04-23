@@ -9,13 +9,87 @@ RMHttp is a Lightweight RESTful library for iOS and watchOS.
 - [x]  URL / JSON  Parameter Encoding
 - [x]  HTTP Methods GET/POST/DELETE/PATCH/PUT based in  [RFC2616](https://tools.ietf.org/html/rfc2616#section-5.1.1)
 - [x]  Custom Request Builder / HEADERS / PARAMETERS
-- [x]  HTTP Response Validation
 - [x]  Dynamic Response Handler (JSONObject, JSONArray, String)
 ##### TODO:
 - [-] Codable Support
 - [-] Support Upload/Download resource
 
-## Requirements
 
-- iOS 11.0+ / watchOS 3.1+
-- Xcode 8.0+
+## Usage
+
+##### HTPP Methods
+HTTP Methods are declared in public enum `RMHttpMethod`
+`GET`, `POST` , `DELETE` , `PUT` , `PATCH`
+
+##### Parameter Encoding
+Encoding are declared in public enum `Encoding`
+`URLEncoding` `JSONEncoding`
+
+##### Serialization
+`JSONObject` - a representation of `Dictionary<String, Any>`
+```swift
+{ "data" : "value",
+"isBoolean" : true,
+"list": [
+"object1",
+"object2"
+]
+}
+```
+
+`JSONArray` - a representation of `[Dictionary<String, Any>]`
+
+```swift
+[
+{ "data1" : "value1"},
+{ "data2" : "value2"},
+{ "data3" : "value3"},
+]
+```
+`String`
+Any String respresentation (e.g HTML String, XML String, Plain Text)
+
+##### Building Request
+
+```swift
+let request = RMRequest(urlString: urlString,
+method:RMHttpMethod.GET(Encoding.URLEncoding),
+parameters: nil,
+hearders: nil)
+```
+
+##### Chained Response Handlers
+
+###### Expecting Array Response
+```swift
+RMHttp.request(completionHandler: { (response: JSONArray?) in
+if let data = response {
+self.textView.text = "\(data)"
+}
+}, errorHandler: { (error) in
+if let err = error {
+self.textView.text = "\(err)"
+}
+}, request: request)
+```
+
+###### Expecting JSON Object Response
+```swift
+RMHttp.request(completionHandler: { (response: JSONObject?) in
+if let data = response {
+self.textView.text = "\(data)"
+}
+}, errorHandler: { (error) in
+if let err = error {
+self.textView.text = "\(err)"
+}
+}, request: request)
+```
+
+Request method that return HTTP response, is a Generic method that `data` object comply `RMHttpProtocol` (e.g JSONObject, JSONArray,  String, )
+```swift
+func request<T>(completionHandler: @escaping (_ data: T?) -> Swift.Void, errorHandler: @escaping (_ error: RMError?) -> Swift.Void, request: RMRequest) {
+```
+
+
+
