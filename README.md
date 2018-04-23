@@ -15,6 +15,16 @@ RMHttp is a Lightweight RESTful library for iOS and watchOS.
 - [-] Support Upload/Download resource
 
 
+## Installation
+```ruby
+pod "RMHttp"
+```
+
+Run the following command in your Terminal
+```bash
+$ pod install
+```
+
 ## Usage
 
 ##### HTPP Methods
