@@ -23,17 +23,20 @@ HTTP Methods are declared in public enum `RMHttpMethod`
 
 ##### Parameter Encoding
 Encoding are declared in public enum `Encoding`
-`URLEncoding` `JSONEncoding`
+
+`URLEncoding`
+`JSONEncoding`
 
 ##### Serialization
 `JSONObject` - a representation of `Dictionary<String, Any>`
 ```swift
-{ "data" : "value",
-"isBoolean" : true,
-"list": [
-"object1",
-"object2"
-]
+{
+    "data" : "value",
+    "isBoolean" : true,
+    "list": [
+        "object1",
+        "object2"
+        ]
 }
 ```
 
@@ -41,11 +44,12 @@ Encoding are declared in public enum `Encoding`
 
 ```swift
 [
-{ "data1" : "value1"},
-{ "data2" : "value2"},
-{ "data3" : "value3"},
+    { "data1" : "value1"},
+    { "data2" : "value2"},
+    { "data3" : "value3"},
 ]
 ```
+
 `String`
 Any String respresentation (e.g HTML String, XML String, Plain Text)
 
@@ -60,35 +64,37 @@ hearders: nil)
 
 ##### Chained Response Handlers
 
-###### Expecting Array Response
+###### Expecting Array object Response
 ```swift
 RMHttp.request(completionHandler: { (response: JSONArray?) in
-if let data = response {
-self.textView.text = "\(data)"
-}
+    if let data = response {
+        self.textView.text = "\(data)"
+    }
 }, errorHandler: { (error) in
-if let err = error {
-self.textView.text = "\(err)"
-}
+    if let err = error {
+        self.textView.text = "\(err)"
+    }
 }, request: request)
 ```
 
-###### Expecting JSON Object Response
+###### Expecting JSON object Response
 ```swift
 RMHttp.request(completionHandler: { (response: JSONObject?) in
-if let data = response {
-self.textView.text = "\(data)"
-}
+    if let data = response {
+        self.textView.text = "\(data)"
+    }
 }, errorHandler: { (error) in
-if let err = error {
-self.textView.text = "\(err)"
-}
+    if let err = error {
+        self.textView.text = "\(err)"
+    }
 }, request: request)
 ```
 
-Request method that return HTTP response, is a Generic method that `data` object comply `RMHttpProtocol` (e.g JSONObject, JSONArray,  String, )
+Generic method that return HTTP response has parameter  `data`  that comply to `RMHttpProtocol` (e.g JSONObject, JSONArray,  String, )
 ```swift
-func request<T>(completionHandler: @escaping (_ data: T?) -> Swift.Void, errorHandler: @escaping (_ error: RMError?) -> Swift.Void, request: RMRequest) {
+func request<T>(completionHandler: @escaping (_ data: T?) -> Swift.Void,
+                errorHandler: @escaping (_ error: RMError?) -> Swift.Void,
+                request: RMRequest)
 ```
 
 
