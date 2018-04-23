@@ -15,3 +15,7 @@ RMHttp is a Lightweight RESTful library for iOS and watchOS.
 - [-] Codable Support
 - [-] Support Upload/Download resource
 
+## Requirements
+
+- iOS 11.0+ / watchOS 3.1+
+- Xcode 8.0+
