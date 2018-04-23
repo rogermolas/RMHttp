@@ -1,9 +1,12 @@
 ![RMHttp Lightweight RESTful library for iOS and watchOS](https://raw.githubusercontent.com/rogermolas/RMHttp/master/RMHttp/Assets.xcassets/RMHttp.imageset/RMHttp.png)
+<p align="center">
+
 [![Build Status](https://travis-ci.org/rogermolas/RMHttp.svg?branch=master)](https://travis-ci.org/rogermolas/RMHttp)
 ![Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/rogermolas/RMHttp/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/badge/Twitter-roger__molas-orange.svg)](https://www.twitter.com/roger_molas)
 
+</p>
 
 RMHttp is a Lightweight RESTful library for iOS and watchOS.
 
