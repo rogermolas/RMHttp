@@ -1,4 +1,4 @@
-![RMHttp Lightweight RESTful library for iOS and watchOS](https://raw.githubusercontent.com/rogermolas/RMHttp/master/RMHttp/Assets.xcassets/RMHttp.imageset/RMHttp.png)
+![RMHttp Lightweight RESTful library for iOS and watchOS](https://raw.githubusercontent.com/rogermolas/RMHttp/master/RMSample/RMSample/Assets.xcassets/RMHttp.imageset/RMHttp.png)
 
 [![Build Status](https://travis-ci.org/rogermolas/RMHttp.svg?branch=master)](https://travis-ci.org/rogermolas/RMHttp)
 ![Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat)
