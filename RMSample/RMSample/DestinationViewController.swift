@@ -2,7 +2,7 @@
 //  DestinationViewController.swift
 //  RMHttp
 //
-//  Created by Greatfeat on 23/04/2018.
+//  Created by Roger Molas on 23/04/2018.
 //  Copyright © 2018 Roger Molas. All rights reserved.
 //
 
