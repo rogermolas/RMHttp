@@ -108,9 +108,9 @@ RMHttp.request(completionHandler: { (response: JSONObject?) in
 
 Generic method that return HTTP response has parameter  `data`  that comply to `RMHttpProtocol` (e.g JSONObject, JSONArray,  String, )
 ```swift
-func request<T>(completionHandler: @escaping (_ data: T?) -> Swift.Void,
-                errorHandler: @escaping (_ error: RMError?) -> Swift.Void,
-                request: RMRequest)
+public class func request<T:RMHttpProtocol>(urlRequest: RMRequest,
+                            completionHandler: @escaping (_ data: T?) -> Swift.Void,
+                            errorHandler: @escaping (_ error: RMError?) -> Swift.Void)
 ```
 
 
