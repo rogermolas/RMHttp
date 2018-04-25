@@ -106,7 +106,7 @@ open class RMBuilder {
     private func buildJSONHttpBody(_ urlRequest: URLRequest, parameters: [String:Any]) -> URLRequest? {
         var mUrlRequest = urlRequest
         do {
-            let data = try JSONSerialization.data(withJSONObject: parameters, options: .sortedKeys)
+            let data = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
             if mUrlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
                 mUrlRequest.setValue(HeaderValue.JSON.rawValue, forHTTPHeaderField: HeaderField.contentType.rawValue)
             }
