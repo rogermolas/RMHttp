@@ -33,9 +33,9 @@ extension RMHttp {
     
     public static let requestManager = RMRequestManager.sharedManager
     
-    public class func request<T:RMHttpProtocol>(completionHandler: @escaping (_ data: T?) -> Swift.Void,
-                                         errorHandler: @escaping (_ error: RMError?) -> Swift.Void,
-                                         request: RMRequest) {
+    public class func request<T:RMHttpProtocol>(urlRequest: RMRequest,
+                                                completionHandler: @escaping (_ data: T?) -> Swift.Void,
+                                                errorHandler: @escaping (_ error: RMError?) -> Swift.Void) {
         requestManager.sendRequest(completionHandler: { (response) in
             // JSON Object
             if (T.getType() == JSONObject.getType()) {
@@ -68,6 +68,6 @@ extension RMHttp {
         }, errorHandler: { (error) in // contains RMHttpError object
             errorHandler(error)
         
-        }, request: request)
+        }, request: urlRequest)
     }
 }

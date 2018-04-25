@@ -33,19 +33,19 @@ class DestinationViewController: UIViewController {
     }
     
     func reques<T:RMHttpProtocol>(request: RMRequest, expected: T) {
-        RMHttp.request(completionHandler: { (response: T?) in
+        RMHttp.request(urlRequest: request, completionHandler: { (response:T?) in
             if let data = response {
                 self.title = "Response Sucess"
                 self.textView.text = "\(data)"
             }
             self.activity.stopAnimating()
-        }, errorHandler: { (error) in
+        }) { (error) in
             self.title = "Response Error"
             self.activity.stopAnimating()
             if let err = error {
                 self.textView.text = "\(err)"
             }
-        }, request: request)
+        }
     }
 
     
