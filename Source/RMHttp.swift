@@ -31,9 +31,9 @@ open class RMHttp { }
 // RESTful API Call
 extension RMHttp {
     
-    static let requestManager = RMRequestManager.sharedManager
+    public static let requestManager = RMRequestManager.sharedManager
     
-    class func request<T:RMHttpProtocol>(completionHandler: @escaping (_ data: T?) -> Swift.Void,
+    public class func request<T:RMHttpProtocol>(completionHandler: @escaping (_ data: T?) -> Swift.Void,
                                          errorHandler: @escaping (_ error: RMError?) -> Swift.Void,
                                          request: RMRequest) {
         requestManager.sendRequest(completionHandler: { (response) in

@@ -36,13 +36,13 @@ public enum ErrorType {
 }
 
 open class RMError {
-    var domain: String? = nil
-    var type: ErrorType = .None
-    var reason: String? = nil
-    var error: Error? = nil
-    var request: RMRequest? = nil
-    var response: RMResponse? = nil
-    var info:Dictionary<String, Any> = Dictionary<String, Any>()
+    public var domain: String? = nil
+    public var type: ErrorType = .None
+    public var reason: String? = nil
+    public var error: Error? = nil
+    public var request: RMRequest? = nil
+    public var response: RMResponse? = nil
+    public var info:Dictionary<String, Any> = Dictionary<String, Any>()
     
     public init(error: Error) {
         self.domain = "com.RMError.response"
