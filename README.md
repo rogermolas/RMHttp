@@ -1,11 +1,13 @@
-![RMHttp Lightweight RESTful library for iOS and watchOS](https://raw.githubusercontent.com/rogermolas/RMHttp/master/RMSample/RMSample/Assets.xcassets/RMHttp.imageset/RMHttp.png)
+# RMHttp
 
 [![Build Status](https://travis-ci.org/rogermolas/RMHttp.svg?branch=master)](https://travis-ci.org/rogermolas/RMHttp)
 ![Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/rogermolas/RMHttp/blob/master/LICENSE)
+[![Platform](https://img.shields.io/cocoapods/p/RMHttp.svg?style=flat)](https://cocoapods.org/pods/RMHttp)
+[![Version](https://img.shields.io/cocoapods/v/RMHttp.svg?style=flat)](https://cocoapods.org/pods/RMHttp)
 [![Twitter](https://img.shields.io/badge/twitter-roger__molas-yellowgreen.svg)](https://www.twitter.com/roger_molas)
 
-
+![RMHttp Lightweight RESTful library for iOS and watchOS](https://raw.githubusercontent.com/rogermolas/RMHttp/master/RMSample/RMSample/Assets.xcassets/RMHttp.imageset/RMHttp.png)
 RMHttp is a Lightweight REST library for iOS and watchOS.
 
 ## Features
@@ -19,6 +21,19 @@ RMHttp is a Lightweight REST library for iOS and watchOS.
 - [-] Codable Support
 - [-] Support Upload/Download resource
 
+
+## Example
+
+To run the example project, clone the repo, and run `pod install` from the Example directory first.
+
+## Installation
+
+RMHttp is available through [CocoaPods](https://cocoapods.org). To install
+it, simply add the following line to your Podfile:
+
+```ruby
+pod 'RMHttp'
+```
 
 ## Installation
 ```ruby
@@ -52,7 +67,7 @@ Encoding are declared in public enum `Encoding`
     "list": [
         "object1",
         "object2"
-        ]
+    ]
 }
 ```
 
@@ -98,7 +113,7 @@ RMHttp.request(completionHandler: { (response: JSONArray?) in
 RMHttp.request(completionHandler: { (response: JSONObject?) in
     if let data = response {
         self.textView.text = "\(data)"
-    }
+        }
 }, errorHandler: { (error) in
     if let err = error {
         self.textView.text = "\(err)"
@@ -109,9 +124,28 @@ RMHttp.request(completionHandler: { (response: JSONObject?) in
 Generic method that return HTTP response has parameter  `data`  that comply to `RMHttpProtocol` (e.g JSONObject, JSONArray,  String, )
 ```swift
 public class func request<T:RMHttpProtocol>(urlRequest: RMRequest,
-                            completionHandler: @escaping (_ data: T?) -> Swift.Void,
-                            errorHandler: @escaping (_ error: RMError?) -> Swift.Void)
+completionHandler: @escaping (_ data: T?) -> Swift.Void,
+errorHandler: @escaping (_ error: RMError?) -> Swift.Void)
 ```
+
+## Author
+
+rogermolas, contact@rogermolas.com
+
+## License
+
+
+The MIT License (MIT)
+
+Copyright (c) 2018 Roger Molas
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
 
 
 

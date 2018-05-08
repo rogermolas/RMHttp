@@ -9,6 +9,8 @@
 import Foundation
 import UIKit
 
+import RMHttp
+
 class DestinationViewController: UIViewController {
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var activity: UIActivityIndicatorView!

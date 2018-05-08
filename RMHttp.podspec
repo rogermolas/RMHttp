@@ -1,24 +1,23 @@
 #
-#  Be sure to run `pod spec lint RMHttp.podspec' to ensure this is a
-#  valid spec and to remove all comments including this before submitting the spec.
+# Be sure to run `pod lib lint RMHttp.podspec' to ensure this is a
+# valid spec before submitting.
 #
-#  To learn more about Podspec attributes see http://docs.cocoapods.org/specification.html
-#  To see working Podspecs in the CocoaPods repo see https://github.com/CocoaPods/Specs/
+# Any lines starting with a # are optional, but their use is encouraged
+# To learn more about a Podspec see https://guides.cocoapods.org/syntax/podspec.html
 #
 
 Pod::Spec.new do |s|
+    s.name         = 'RMHttp'
+    s.version      = '1.2'
+    s.summary      = 'Lightweight RESTful library for iOS and watchOS'
 
-  s.name         = "RMHttp"
-  s.version      = "1.1"
-  s.summary      = "Lightweight RESTful library for iOS and watchOS"
+    s.homepage         = 'https://github.com/rogermolas/RMHttp'
+    s.license          = { :type => 'MIT', :file => 'LICENSE' }
+    s.author           = { 'rogermolas' => 'contact@rogermolas.com' }
+    s.source           = { :git => 'https://github.com/rogermolas/RMHttp.git', :tag => s.version.to_s }
+    s.social_media_url = 'https://twitter.com/roger_molas'
 
-  s.homepage         = 'https://github.com/rogermolas/RMHttp'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Roger Molas' => 'contact@rogermolas.com' }
-  s.source           = { :git => 'https://github.com/rogermolas/RMHttp.git', :tag => s.version.to_s }
-  s.social_media_url = 'https://twitter.com/roger_molas'
+    s.ios.deployment_target = '10.0'
 
-  s.ios.deployment_target = '10.0'
-  s.source_files = 'Source/*.swift'
-
+    s.source_files = 'RMHttp/Classes/*.swift'
 end
