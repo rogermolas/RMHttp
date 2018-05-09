@@ -30,10 +30,10 @@ import Foundation
 public typealias JSONObject = Dictionary<String, Any>
 public typealias JSONArray = [Dictionary<String, Any>]
 
-public enum RMResponseType: String {
-    case object = "JSONObject"
-    case array = "JSONArray"
-    case string = "String"
+public enum RMResponseType {
+    case object
+    case array
+    case string
 }
 
 // Status code that do not contain response data.
@@ -118,7 +118,11 @@ extension RMResponse {
     // JSON Array
     private func httpJSONResponseArray<T>(expected: T) -> RMHttpObject<T> {
         let succesDictionary = [["success" : true]] as! T
-        if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success(succesDictionary)}
+        
+        if let response = httpResponse, successStatusCodes.contains(response.statusCode) {
+            return .success(succesDictionary)
+        }
+        
         do {
             if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
                 return .success(object)

@@ -51,6 +51,13 @@ open class RMError {
     
     public init() {
         self.domain = "com.RMError.response"
+        self.reason = "Unknown Type"
+    }
+    
+    
+    public init(reason:String?) {
+        self.domain = "com.RMError.response"
+        self.reason = reason
     }
     
     public func set(info:Dictionary<String, Any>) {

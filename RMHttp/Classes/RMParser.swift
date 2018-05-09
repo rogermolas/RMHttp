@@ -26,14 +26,13 @@
 
 import Foundation
 
+public typealias RMParserCompletionHandler = (RMResponse?, RMError?) -> ()
+
 public protocol RMHttpParserDelegate {
     func rmParserDidfinished(_ parser: RMParser)
     func rmParserDidFail(_ parser: RMParser, error: RMError?)
     func rmParserDidCancel(_ parser: RMParser)
 }
-
-public typealias RMHttpParserComplete = (RMResponse?) -> Swift.Void
-public typealias RMHttpParserError = (RMError?) -> Swift.Void
 
 open class RMParser: NSObject {
     public var delegate: RMHttpParserDelegate? = nil
@@ -47,8 +46,7 @@ open class RMParser: NSObject {
     private var currentRequest: RMRequest? = nil
     private var currentResponse: RMResponse? = nil
     
-    private var parserSuccessHandler:RMHttpParserComplete? = nil
-    private var parserErrorHandler: RMHttpParserError? = nil
+    private var completionHandler:RMParserCompletionHandler? = nil
     
     private var startTime: CFAbsoluteTime?
     private var initializeResponseTime: CFAbsoluteTime?
@@ -58,17 +56,12 @@ open class RMParser: NSObject {
     
     public override init() { super.init() }
     
-    public func parseWith(request: RMRequest,
-                          completionHandler: RMHttpParserComplete?,
-                          errorHandler: RMHttpParserError?) {
-        
-        parserSuccessHandler = nil
-        parserErrorHandler = nil
+    public func parseWith(request: RMRequest, callback: RMParserCompletionHandler?) {
+        completionHandler = nil
         currentRequest = nil
         
         // Reference Callbacks and request
-        parserSuccessHandler = completionHandler
-        parserErrorHandler = errorHandler
+        completionHandler = callback
         currentRequest = request
         restrictedStatusCodes = request.restrictStatusCodes
         
@@ -82,8 +75,7 @@ open class RMParser: NSObject {
     
     // MARK: Life cycle
     deinit {
-        parserSuccessHandler = nil
-        parserErrorHandler = nil
+        completionHandler = nil
     }
     
     // MARK: Resume task operations
@@ -149,7 +141,7 @@ extension RMParser: URLSessionDataDelegate {
             responseError.type = .StatusCode
             responseError.response = self.currentResponse
             responseError.request = self.currentRequest
-            self.parserErrorHandler!(responseError)
+            self.completionHandler!(nil, responseError)
             self.delegate?.rmParserDidFail(self, error: responseError)
             completionHandler(.cancel)
         }
@@ -174,7 +166,7 @@ extension RMParser: URLSessionTaskDelegate {
                 self.isError = true
                 let responseError = RMError(error: error!)
                 responseError.type = .SessionTask
-                self.parserErrorHandler!(responseError)
+                self.completionHandler!(nil, responseError)
                 self.delegate?.rmParserDidFail(self, error: responseError)
                 return
             }
@@ -182,7 +174,7 @@ extension RMParser: URLSessionTaskDelegate {
             if self.receiveData != nil && self.receiveData!.length > 0 {
                 self.currentResponse?.data = self.receiveData!
             }
-            self.parserSuccessHandler!(self.currentResponse)
+            self.completionHandler!(self.currentResponse, nil)
             self.delegate?.rmParserDidfinished(self)
         }
     }
