@@ -113,6 +113,7 @@ extension RMHttpObject {
 
 // Comply to RMHttp base object Protocol
 extension RMHttpObject : RMHttpProtocol {
+    
     public typealias BaseObject = Value
     
     public static func internalError() -> RMError? { return nil }
@@ -126,6 +127,7 @@ extension RMHttpObject : RMHttpProtocol {
 
 // Dictionary Response (JSON object)
 extension Dictionary:RMHttpProtocol {
+
     public typealias BaseObject = Dictionary<String, Any>
     
     public static func internalError() -> RMError? {
@@ -139,6 +141,7 @@ extension Dictionary:RMHttpProtocol {
 
 // Array Response (JSON Array)
 extension Array:RMHttpProtocol {
+
     public typealias BaseObject = [Dictionary<String, Any>]
     
     public static func internalError() -> RMError? {
@@ -152,6 +155,7 @@ extension Array:RMHttpProtocol {
 
 // String Response (all Strings, e.g HTM string)
 extension String: RMHttpProtocol {
+    
     public typealias BaseObject = String
     
     public static func internalError() -> RMError? {
@@ -165,6 +169,7 @@ extension String: RMHttpProtocol {
 
 // Error Response (All error)
 extension RMError: RMHttpProtocol {
+    
     public typealias BaseObject = RMError
     
     public static func internalError() -> RMError? {
@@ -177,6 +182,7 @@ extension RMError: RMHttpProtocol {
 }
 
 extension NSNull: RMHttpProtocol {
+    
     public typealias BaseObject = NSNull
     
     public static func internalError() -> RMError? {

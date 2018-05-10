@@ -26,14 +26,36 @@
 
 import Foundation
 
-open class RMHttp { }
+open class RMHttp {
+    public static let requestManager = RMRequestManager.sharedManager
+}
 
 // RESTful API Call
 extension RMHttp {
+    public class func JSON<T:RMHttpProtocol>( request: RMRequest,
+                                              completionHandler:@escaping (_ data:T?, _ error: RMError?) -> ()) {
+        
+        requestManager.send(request: request) { (response, error) in
+            guard error == nil else {
+                completionHandler(nil, error)
+                return
+            }
+            
+            if let object = response?.JSONResponse(type: T.self) {
+                if object.isSuccess {
+                    completionHandler(object.value, nil)
+                } else {
+                    completionHandler(nil, object.error)
+                }
+            } else { }
+        }
+    }
+}
+
+// MARK: - Codable
+extension RMHttp {
     
-    public static let requestManager = RMRequestManager.sharedManager
-    
-    public class func JSON<T:RMHttpProtocol>(
+    public class func JSON<T:Codable>(
         request: RMRequest,
         completionHandler:@escaping (_ data:T?, _ error: RMError?) -> ()) {
         
@@ -42,36 +64,7 @@ extension RMHttp {
                 completionHandler(nil, error)
                 return
             }
-            
-            if (T.getType() == JSONObject.getType()) {  /// JSON Object
-                let object = response?.JSONResponse(type: .object, value: JSONObject())
-                if object?.value != nil {
-                    completionHandler((object?.value as! T), nil)
-                } else {
-                    completionHandler(nil, object?.error)
-                }
-                
-            } else if (T.getType() == JSONArray.getType()) { /// JSON Array
-                let array = response?.JSONResponse(type: .array, value: JSONArray())
-                if array?.value != nil {
-                    completionHandler((array?.value as! T), nil)
-                } else {
-                    completionHandler(nil, array?.error)
-                }
-                
-            } else {
-                // Other Response
-                if (T.getType() == String.getType()) { /// String
-                    let stringResponse = response?.StringResponse(encoding: .utf8)
-                    if stringResponse?.value != nil {
-                        completionHandler((stringResponse?.value as! T), nil)
-                    } else {
-                        completionHandler(nil, stringResponse?.error)
-                    }
-                } else {
-                    completionHandler(nil, RMError.internalError())
-                }
-            }
+            completionHandler(nil, nil)
         }
     }
 }

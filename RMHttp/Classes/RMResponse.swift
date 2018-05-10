@@ -52,9 +52,7 @@ open class RMResponse {
     public init() { }
     
     // Serialize JSON response
-    public func JSONResponse<T:RMHttpProtocol>(type:RMResponseType, value: T) -> RMHttpObject<T> {
-        currentType = type // reference the type
-        
+    public func JSONResponse<T>(type: T.Type) -> RMHttpObject<T> {
         // Check if status code success but no response
         if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
             let error = RMError()
@@ -64,22 +62,27 @@ open class RMResponse {
             return .error(error)
         }
         
-        switch type {
-        case .object:
+        if (T.self == JSONObject.getType()) {  /// JSON Object
             let data =  httpJSONResponseObject(expected: Dictionary<String, Any>())
             if data.isSuccess {
                 return data as! RMHttpObject<T>
             }
             return .error(data.error!)
-        
-        case .array:
+            
+        } else if (T.self == JSONArray.getType()) {    /// JSON Array
             let data =  httpJSONResponseArray(expected: [Dictionary<String, Any>()])
             if data.isSuccess {
                 return data as! RMHttpObject<T>
             }
             return .error(data.error!)
         
-        default:
+        } else if (T.self == String.getType()) {   /// String
+            let data =  StringResponse(encoding: .utf8)
+            if data.isSuccess {
+                return data as! RMHttpObject<T>
+            }
+            return .error(data.error!)
+        } else {
             let error = RMError()
             error.type = .Parsing
             return .error(error)
@@ -92,7 +95,12 @@ open class RMResponse {
     }
 }
 
-// Private Operations
+//MARK: - Codable
+extension RMResponse {
+    
+}
+
+//MARK: - Private Operations
 extension RMResponse {
     
     // JSON Object
