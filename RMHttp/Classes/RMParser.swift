@@ -26,7 +26,7 @@
 
 import Foundation
 
-public typealias RMParserCompletionHandler = (RMResponse?, RMError?) -> ()
+public typealias RMParserCompletionHandler = (RMResponse?, RMError?) -> Void
 
 public protocol RMHttpParserDelegate {
     func rmParserDidfinished(_ parser: RMParser)

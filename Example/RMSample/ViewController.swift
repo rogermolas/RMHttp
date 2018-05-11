@@ -10,7 +10,13 @@ import UIKit
 
 class ViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
-    let list = ["GET", "POST", "DELETE", "STRING RESPONSE"]
+    let list = ["GET",
+                "GET with PARAMS",
+                "POST",
+                "POST with PARAMS",
+                "POST JSON BODY",
+                "DELETE",
+                "STRING RESPONSE"]
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -11,6 +11,23 @@ import UIKit
 
 import RMHttp
 
+//{
+//    args: { },
+//    headers: {
+//        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+//        Accept-Encoding: "gzip, deflate, br",
+//        Accept-Language: "en-US,en;q=0.9",
+//        Cache-Control: "max-age=0",
+//        Connection: "close",
+//        Cookie: "_gauges_unique_month=1; _gauges_unique_year=1; _gauges_unique=1",
+//        Host: "httpbin.org",
+//        Upgrade-Insecure-Requests: "1",
+//        User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36"
+//    },
+//    origin: "180.232.71.19",
+//    url: "https://httpbin.org/get"
+//}
+
 class DestinationViewController: UIViewController {
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var activity: UIActivityIndicatorView!
@@ -25,9 +42,51 @@ class DestinationViewController: UIViewController {
         return request
     }
     
+    var GET_PARAMS: RMRequest {
+        let params = [
+            "string":"Ipsum",   // String
+            "number": 100,      // Number
+            "boolean":true      // Boolean
+            ] as [String : Any]
+        
+        let urlString = "https://httpbin.org/get"
+        let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: params, hearders: nil)
+        print("\nHTTP : Sending GET request : \(request.url!)")
+        print("HTTP : Parameters : \(request.parameters!)")
+        return request
+    }
+    
     var POST: RMRequest {
         let urlString = "https://httpbin.org/post"
         let request = RMRequest(urlString, method: .POST(.URLEncoding), parameters: nil, hearders: nil)
+        print("\nHTTP : Sending POST request : \(request.url!)")
+        print("HTTP : Parameters : \(request.parameters!)")
+        return request
+    }
+    
+    var POST_PARAMS: RMRequest {
+        let params = [
+            "string":"Ipsum",   // String
+            "number": 100,      // Number
+            "boolean":true      // Boolean
+            ] as [String : Any]
+        
+        let urlString = "https://httpbin.org/post"
+        let request = RMRequest(urlString, method: .POST(.URLEncoding), parameters: params, hearders: nil)
+        print("\nHTTP : Sending POST request : \(request.url!)")
+        print("HTTP : Parameters : \(request.parameters!)")
+        return request
+    }
+    
+    var POST_JSON_BODY: RMRequest {
+        let params = [
+            "string":"Ipsum",   // String
+            "number": 100,      // Number
+            "boolean":true      // Boolean
+            ] as [String : Any]
+        
+        let urlString = "https://httpbin.org/post"
+        let request = RMRequest(urlString, method: .POST(.JSONEncoding), parameters: params, hearders: nil)
         print("\nHTTP : Sending POST request : \(request.url!)")
         print("HTTP : Parameters : \(request.parameters!)")
         return request
@@ -46,19 +105,31 @@ class DestinationViewController: UIViewController {
         if type == "GET" {
             reques(request: GET, expected: JSONObject())
         }
+        if type == "GET with PARAMS" {
+            reques(request: GET_PARAMS, expected: JSONObject())
+        }
+
         if type == "POST" {
             reques(request: POST, expected: JSONObject())
         }
+        if type == "POST with PARAMS" {
+            reques(request: POST_PARAMS, expected: JSONObject())
+        }
+        if type == "POST JSON BODY" {
+            reques(request: POST_JSON_BODY, expected: JSONObject())
+        }
+        
         if type == "DELETE" {
             reques(request: DELETE, expected: JSONObject())
         }
+        
         if type == "STRING RESPONSE" {
             reques(request: buildGETHTMLStringRequest(), expected: String())
         }
     }
     
     func reques<T:RMHttpProtocol>(request: RMRequest, expected: T) {
-        
+
         RMHttp.JSON(request: request) { (response:T?, error) in
             guard error == nil else {
                 self.title = "Response Error"

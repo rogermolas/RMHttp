@@ -26,28 +26,26 @@
 
 import Foundation
 
+public typealias Handler<T> = (_ data:T?, _ error: RMError?) -> Void
+
 open class RMHttp {
     public static let requestManager = RMRequestManager.sharedManager
 }
 
 // RESTful API Call
 extension RMHttp {
-    public class func JSON<T:RMHttpProtocol>( request: RMRequest,
-                                              completionHandler:@escaping (_ data:T?, _ error: RMError?) -> ()) {
-        
+    public class func JSON<T:RMHttpProtocol>(request: RMRequest, completionHandler: @escaping Handler<T>) {
         requestManager.send(request: request) { (response, error) in
             guard error == nil else {
                 completionHandler(nil, error)
                 return
             }
-            
-            if let object = response?.JSONResponse(type: T.self) {
-                if object.isSuccess {
-                    completionHandler(object.value, nil)
-                } else {
-                    completionHandler(nil, object.error)
-                }
-            } else { }
+            let object = response!.JSONResponse(type: T.self)
+            if (object.isSuccess) {
+                completionHandler(object.value, nil)
+            } else {
+                completionHandler(nil, object.error)
+            }
         }
     }
 }
@@ -55,16 +53,19 @@ extension RMHttp {
 // MARK: - Codable
 extension RMHttp {
     
-    public class func JSON<T:Codable>(
-        request: RMRequest,
-        completionHandler:@escaping (_ data:T?, _ error: RMError?) -> ()) {
-        
+    public class func JSON<T: Decodable>(request: RMRequest, completionHandler: @escaping Handler<T>) {
         requestManager.send(request: request) { (response, error) in
             guard error == nil else {
                 completionHandler(nil, error)
                 return
             }
-            completionHandler(nil, nil)
+//            let object = response?.JSONDecodableResponse(model: T())
+//            if (object?.isSuccess)! {
+//                completionHandler(object?.value, nil)
+//            } else {
+//                completionHandler(nil, object?.error)
+//            }
+////            completionHandler(nil, nil)
         }
     }
 }

@@ -81,7 +81,7 @@ public enum RMHttpParsingError<TYPE:RMHttpProtocol> {
 }
 
 // Response object type
-public enum RMHttpObject<Value:RMHttpProtocol> {
+public enum RMHttpObject<Value> {
     public typealias SerializedObject = Value
     case success(Value)
     case error(RMError)

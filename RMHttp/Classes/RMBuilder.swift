@@ -37,9 +37,8 @@ private enum HeaderValue: String {
 
 open class RMBuilder {
     
-    public func build(request: URLRequest?,
-                      parameter: [String: Any]?,
-                      method: RMHttpMethod<Encoding>) -> URLRequest {
+    public func build(request: URLRequest?, parameter: [String: Any]?, method: RMHttpMethod<Encoding>) -> URLRequest {
+        
         var mUrlRequest = request
         guard parameter != nil else { return mUrlRequest! }
         
@@ -56,7 +55,7 @@ open class RMBuilder {
         return mUrlRequest!
     }
     
-    // MARK: Build URL parameters
+    //MARK:- Build URL parameters
     private func build(_ parameters: [String: Any]) -> String {
         var components: [String] = []
         for key in parameters.keys.sorted(by: <) {
@@ -66,7 +65,7 @@ open class RMBuilder {
         return components.joined(separator: "&")
     }
     
-    // MARK: Encode parameter value
+    //MARK:- Encode parameter value
     private func encodeParameter(value: Any) -> String! {
         var mValue: String
         if let bool = value as? Bool  {
