@@ -46,7 +46,7 @@ open class RMRequest {
         sessionConfig.httpMaximumConnectionsPerHost = httpMaximumConnectionsPerHost // connection per host
     }
     
-    public init(urlString: String,
+    public init(_ urlString: String,
                 method: RMHttpMethod<Encoding>,
                 parameters: [String : Any]!,
                 hearders: [String : String]!) {

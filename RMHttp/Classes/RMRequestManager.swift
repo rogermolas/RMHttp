@@ -38,14 +38,10 @@ open class RMRequestManager {
     deinit { requestList.removeAllObjects() }
     
     // MARK: - Public request
-    public func sendRequest(completionHandler: @escaping RMHttpParserComplete,
-                            errorHandler: @escaping RMHttpParserError,
-                            request: RMRequest) {
+    public func send(request: RMRequest, completionHandler: @escaping RMParserCompletionHandler) {
         let parser = RMParser()
         parser.delegate = self
-        parser.parseWith(request: request,
-                         completionHandler: completionHandler,
-                         errorHandler: errorHandler)
+        parser.parseWith(request: request, callback: completionHandler)
     }
 
     // MARK: Stop all requests

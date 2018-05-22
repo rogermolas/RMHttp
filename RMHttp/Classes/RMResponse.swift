@@ -30,10 +30,10 @@ import Foundation
 public typealias JSONObject = Dictionary<String, Any>
 public typealias JSONArray = [Dictionary<String, Any>]
 
-public enum RMResponseType: String {
-    case object = "JSONObject"
-    case array = "JSONArray"
-    case string = "String"
+public enum RMResponseType {
+    case object
+    case array
+    case string
 }
 
 // Status code that do not contain response data.
@@ -51,10 +51,8 @@ open class RMResponse {
    
     public init() { }
     
-    // Serialize JSON response
-    public func JSONResponse<T:RMHttpProtocol>(type:RMResponseType, value: T) -> RMHttpObject<T> {
-        currentType = type // reference the type
-        
+    // Serialize JSON response via JSONSerialization
+    public func JSONResponse<T>(type: T.Type) -> RMHttpObject<T> {
         // Check if status code success but no response
         if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
             let error = RMError()
@@ -64,22 +62,27 @@ open class RMResponse {
             return .error(error)
         }
         
-        switch type {
-        case .object:
+        if (T.self == JSONObject.getType()) {  /// JSON Object
             let data =  httpJSONResponseObject(expected: Dictionary<String, Any>())
             if data.isSuccess {
                 return data as! RMHttpObject<T>
             }
             return .error(data.error!)
-        
-        case .array:
+            
+        } else if (T.self == JSONArray.getType()) {    /// JSON Array
             let data =  httpJSONResponseArray(expected: [Dictionary<String, Any>()])
             if data.isSuccess {
                 return data as! RMHttpObject<T>
             }
             return .error(data.error!)
         
-        default:
+        } else if (T.self == String.getType()) {   /// String
+            let data =  StringResponse(encoding: .utf8)
+            if data.isSuccess {
+                return data as! RMHttpObject<T>
+            }
+            return .error(data.error!)
+        } else {
             let error = RMError()
             error.type = .Parsing
             return .error(error)
@@ -92,11 +95,31 @@ open class RMResponse {
     }
 }
 
-// Private Operations
+//MARK: - Serialize JSON response using Codable
+extension RMResponse {
+    public func JSONDecodableResponse<T>(model: T) -> RMHttpObject<T> where T: Decodable {
+        // Check if status code success but no response
+        if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
+            let error = RMError()
+            error.type = .StatusCode
+            error.setHttpResponse(error: RMHttpParsingError.noData(NSNull()))
+            error.response = self
+            return .error(error)
+        }
+        
+        let data =  decodableJSONResponseObject(expected: model)
+        if data.isSuccess {
+            return data
+        }
+        return .error(data.error!)
+    }
+}
+
+//MARK: - Private Operations
 extension RMResponse {
     
-    // JSON Object
-    private func httpJSONResponseObject<T>(expected: T) -> RMHttpObject<T> {
+    //MARK:- JSON Object
+    private func httpJSONResponseObject<T>(expected: T) -> RMHttpObject<T> where T : RMHttpProtocol {
         let succesDictionary = ["success" : true] as! T
         if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success(succesDictionary)}
         do {
@@ -115,10 +138,14 @@ extension RMResponse {
         }
     }
     
-    // JSON Array
-    private func httpJSONResponseArray<T>(expected: T) -> RMHttpObject<T> {
+    //MARK:- JSON Array
+    private func httpJSONResponseArray<T>(expected: T) -> RMHttpObject<T> where T : RMHttpProtocol {
         let succesDictionary = [["success" : true]] as! T
-        if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success(succesDictionary)}
+        
+        if let response = httpResponse, successStatusCodes.contains(response.statusCode) {
+            return .success(succesDictionary)
+        }
+        
         do {
             if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
                 return .success(object)
@@ -135,7 +162,7 @@ extension RMResponse {
         }
     }
     
-    // String Response
+    //MARK:- String Response
     private func httpResponseString(encoding: String.Encoding?) -> RMHttpObject<String> {
         if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success("success") }
         if let string:String = String(data:self.data! as Data, encoding: encoding!) {
@@ -145,6 +172,22 @@ extension RMResponse {
         error.type = .Parsing
         error.setHttpResponse(error: RMHttpParsingError.invalidType(String()))
         return .error(error)
+    }
+    
+    
+    //MARK:- JSON Response
+    private func decodableJSONResponseObject<T>(expected: T) -> RMHttpObject<T> where T : Decodable {
+        let succesDictionary = ["success" : true] as! T
+        if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success(succesDictionary)}
+        
+        do {
+            let object = try JSONDecoder().decode(T.self, from: self.data! as Data)
+            return .success(object)
+        } catch let error {
+            let error = RMError(error: error)
+            error.type = .Parsing
+            return .error(error)
+        }
     }
 }
 
