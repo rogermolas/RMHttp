@@ -51,6 +51,13 @@ open class RMBuilder {
             }
         } else { // JSON Body
             mUrlRequest = buildJSONHttpBody(request!, parameters: parameter!)
+            if mUrlRequest?.httpBody == nil {
+                let data = try! JSONSerialization.data(withJSONObject: parameter ?? "", options: [])
+                if mUrlRequest?.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
+                    mUrlRequest?.setValue(HeaderValue.JSON.rawValue, forHTTPHeaderField: HeaderField.contentType.rawValue)
+                }
+                mUrlRequest?.httpBody = data
+            }
         }
         return mUrlRequest!
     }
