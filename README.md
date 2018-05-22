@@ -7,7 +7,7 @@
 [![Version](https://img.shields.io/cocoapods/v/RMHttp.svg?style=flat)](https://cocoapods.org/pods/RMHttp)
 [![Twitter](https://img.shields.io/badge/twitter-roger__molas-yellowgreen.svg)](https://www.twitter.com/roger_molas)
 
-![RMHttp Lightweight RESTful library for iOS and watchOS](https://raw.githubusercontent.com/rogermolas/RMHttp/master/RMSample/RMSample/Assets.xcassets/RMHttp.imageset/RMHttp.png)
+![RMHttp Lightweight RESTful library for iOS and watchOS](https://raw.githubusercontent.com/rogermolas/RMHttp/master/Example/RMSample/Assets.xcassets/RMHttp.imageset/RMHttp.png)
 RMHttp is a Lightweight REST library for iOS and watchOS.
 
 ## Features
