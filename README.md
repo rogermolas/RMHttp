@@ -87,45 +87,55 @@ Any String respresentation (e.g HTML String, XML String, Plain Text)
 ##### Building Request
 
 ```swift
-let request = RMRequest(urlString: urlString,
-method:RMHttpMethod.GET(Encoding.URLEncoding),
-parameters: nil,
-hearders: nil)
+let params = [
+"string":"Ipsum",   // String
+"number": 100,      // Number
+"boolean":true      // Boolean
+] as [String : Any]
+
+let urlString = "https://httpbin.org/get"
+let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: params, hearders: nil)
 ```
 
 ##### Chained Response Handlers
 
 ###### Expecting Array object Response
 ```swift
-RMHttp.request(completionHandler: { (response: JSONArray?) in
+RMHttp.JSON(request: request) { (response:JSONArray?, error) in
+    guard error == nil else {
+        self.title = "Response Error"
+        self.activity.stopAnimating()
+        self.textView.text = "\(err)"
+        return
+    }
+    self.activity.stopAnimating()
     if let data = response {
+        self.title = "Response Sucess"
         self.textView.text = "\(data)"
     }
-}, errorHandler: { (error) in
-    if let err = error {
-        self.textView.text = "\(err)"
-    }
-}, request: request)
+}
 ```
 
 ###### Expecting JSON object Response
 ```swift
-RMHttp.request(completionHandler: { (response: JSONObject?) in
-    if let data = response {
-        self.textView.text = "\(data)"
-        }
-}, errorHandler: { (error) in
-    if let err = error {
+RMHttp.JSON(request: request) { (response:JSONObject?, error) in
+    guard error == nil else {
+        self.title = "Response Error"
+        self.activity.stopAnimating()
         self.textView.text = "\(err)"
+        return
     }
-}, request: request)
+    self.activity.stopAnimating()
+    if let data = response {
+        self.title = "Response Sucess"
+        self.textView.text = "\(data)"
+    }
+}
 ```
 
 Generic method that return HTTP response has parameter  `data`  that comply to `RMHttpProtocol` (e.g JSONObject, JSONArray,  String, )
 ```swift
-public class func request<T:RMHttpProtocol>(urlRequest: RMRequest,
-completionHandler: @escaping (_ data: T?) -> Swift.Void,
-errorHandler: @escaping (_ error: RMError?) -> Swift.Void)
+public class func JSON<T:RMHttpProtocol>(request: RMRequest, completionHandler: @escaping Handler<T>)
 ```
 
 ## Author
