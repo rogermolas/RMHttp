@@ -29,15 +29,15 @@ import Foundation
 public var RMHttpErrorKey:UInt8 = 0
 
 public enum ErrorType {
-    case Parsing
-    case SessionTask
-    case StatusCode
-    case None
+    case parsing
+    case sessionTask
+    case statusCode
+    case none
 }
 
 open class RMError {
     public var domain: String? = nil
-    public var type: ErrorType = .None
+    public var type: ErrorType = .none
     public var reason: String? = nil
     public var error: Error? = nil
     public var request: RMRequest? = nil

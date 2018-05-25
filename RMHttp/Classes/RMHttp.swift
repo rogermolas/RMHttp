@@ -30,20 +30,51 @@ public typealias Handler<T> = (_ data:T?, _ error: RMError?) -> Void
 
 open class RMHttp {
     public static let requestManager = RMRequestManager.sharedManager
+    public static var isDebug = false
 }
 
 // RESTful API Call
 extension RMHttp {
     public class func JSON<T:RMHttpProtocol>(request: RMRequest, completionHandler: @escaping Handler<T>) {
         requestManager.send(request: request) { (response, error) in
+            
             guard error == nil else {
                 completionHandler(nil, error)
                 return
             }
             let object = response!.JSONResponse(type: T.self)
             if (object.isSuccess) {
+                if isDebug {
+                    print("""
+                        
+                        -- SUCCESS --
+                            Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
+                            - Parametters: \(String(describing: request.parameters!))
+                            - Headers: \(String(describing: request.allHeaders))
+                        
+                            Response:
+                            - Status Code \(String(describing: response!.statusCode!))
+                        
+                        \(object.value!)
+                        """)
+                }
                 completionHandler(object.value, nil)
+                
             } else {
+                if isDebug {
+                    print("""
+                        
+                        -- ERROR --
+                            Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
+                            - Parametters: \(String(describing: request.parameters!))
+                            - Headers: \(String(describing: request.allHeaders))
+                        
+                            Response:
+                            - Status Code: \(String(describing: response!.statusCode!))
+                        
+                            \(object.error!)
+                        """)
+                }
                 completionHandler(nil, object.error)
             }
         }

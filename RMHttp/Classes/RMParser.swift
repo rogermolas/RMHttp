@@ -133,17 +133,6 @@ extension RMParser: URLSessionDataDelegate {
         // Callback on Error
         if let currentResponse = response, self.restrictedStatusCodes.contains(currentResponse.statusCode) {
             self.isError = true
-            self.endTime = CFAbsoluteTimeGetCurrent()
-            self.setTimeline()
-            
-            // Add error object into response object
-            let responseError = RMError()
-            responseError.type = .StatusCode
-            responseError.response = self.currentResponse
-            responseError.request = self.currentRequest
-            self.completionHandler!(nil, responseError)
-            self.delegate?.rmParserDidFail(self, error: responseError)
-            completionHandler(.cancel)
         }
         
         // Initialize data
@@ -165,16 +154,28 @@ extension RMParser: URLSessionTaskDelegate {
             guard error == nil else {
                 self.isError = true
                 let responseError = RMError(error: error!)
-                responseError.type = .SessionTask
+                responseError.type = .sessionTask
                 self.completionHandler!(nil, responseError)
                 self.delegate?.rmParserDidFail(self, error: responseError)
                 return
             }
             
+            // Raw data response
             if self.receiveData != nil && self.receiveData!.length > 0 {
                 self.currentResponse?.data = self.receiveData!
             }
-            self.completionHandler!(self.currentResponse, nil)
+            
+            // Due to restricted Error Code it will return an error
+            if self.isError {
+                // Add error object into response object
+                let responseError = RMError()
+                responseError.type = .statusCode
+                responseError.response = self.currentResponse
+                responseError.request = self.currentRequest
+                self.completionHandler!(self.currentResponse, responseError)
+            } else {
+                self.completionHandler!(self.currentResponse, nil)
+            }
             self.delegate?.rmParserDidfinished(self)
         }
     }
