@@ -15,9 +15,3 @@ target 'Demo' do
       pod 'RMHttp', :path => '../'
   end
 end
-
-#target 'DemoTests' do
-#   use_frameworks!
-#   # Pods for testing
-#   pod 'RMHttp', :path => '../'
-#end
