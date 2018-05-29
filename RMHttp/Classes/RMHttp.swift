@@ -26,7 +26,8 @@
 
 import Foundation
 
-public typealias Handler<T> = (_ data:T?, _ error: RMError?) -> Void
+public typealias JSONHandler<T> = (_ data:T?, _ error: RMError?) -> Void
+public typealias ResponseHandler = (_ response: RMResponse, _ error: RMError?) -> Void
 
 open class RMHttp {
     public static let requestManager = RMRequestManager.sharedManager
@@ -35,13 +36,14 @@ open class RMHttp {
 
 // RESTful API Call
 extension RMHttp {
-    public class func JSON<T:RMHttpProtocol>(request: RMRequest, completionHandler: @escaping Handler<T>) {
+    public class func JSON<T:RMHttpProtocol>(request: RMRequest, completionHandler: @escaping JSONHandler<T>) {
         requestManager.send(request: request) { (response, error) in
             
             guard error == nil else {
                 completionHandler(nil, error)
                 return
             }
+            
             let object = response!.JSONResponse(type: T.self)
             if (object.isSuccess) {
                 if isDebug {
@@ -79,24 +81,33 @@ extension RMHttp {
             }
         }
     }
+    
+    public class func response(request: RMRequest, completionHandler: @escaping ResponseHandler) {
+        requestManager.send(request: request) { (response, error) in
+            
+            completionHandler(response!, error)
+            
+            if isDebug {
+                print("""
+                    
+                    -- SUCCESS --
+                    Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
+                    - Parametters: \(String(describing: request.parameters!))
+                    - Headers: \(String(describing: request.allHeaders))
+                    
+                    Response:
+                    - Status Code \(String(describing: response!.statusCode!))
+                    
+                    """)
+            }
+        }
+    }
 }
 
 // MARK: - Codable
 extension RMHttp {
-    
-    public class func JSON<T: Decodable>(request: RMRequest, completionHandler: @escaping Handler<T>) {
-        requestManager.send(request: request) { (response, error) in
-            guard error == nil else {
-                completionHandler(nil, error)
-                return
-            }
-//            let object = response?.JSONDecodableResponse(model: T())
-//            if (object?.isSuccess)! {
-//                completionHandler(object?.value, nil)
-//            } else {
-//                completionHandler(nil, object?.error)
-//            }
-////            completionHandler(nil, nil)
-        }
-    }
+    // TODO: Codable support
+//    public class func JSON<T: Decodable>(request: RMRequest, completionHandler: @escaping Handler<T>) {
+//
+//    }
 }
