@@ -10,35 +10,43 @@ import XCTest
 import Foundation
 
 @testable import Demo
+@testable import RMHttp
 import RMHttp
 
 class ParsingTest: XCTestCase {
-    
+
     func testParseJSONObject() {
-        RMHttp.isDebug = true
+        let expectation = XCTestExpectation(description: "testParseJSONObject")
         let urlString = "https://httpbin.org/get"
         let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: nil, hearders: nil)
         RMHttp.JSON(request: request) { (response:JSONObject?, error) in
             guard error == nil else {
                 XCTFail()
+                expectation.fulfill()
                 return
             }
+            
             if let data = response {
-                XCTAssert(true, "\(data)")
+                XCTAssertNotNil(data, "No data was downloaded.")
             }
+            expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testHandleParsingError() {
-        RMHttp.isDebug = true
+        let expectation = XCTestExpectation(description: "testHandleParsingError")
         let urlString = "https://httpbin.org/getxx"  // invalid URL
         let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: nil, hearders: nil)
         RMHttp.JSON(request: request) { (response:JSONObject?, error) in
             guard error == nil else {
-                XCTAssertTrue(error != nil)
+                XCTAssertNotNil(error, "Expected Error")
+                expectation.fulfill()
                 return
             }
             XCTFail()
+            expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 10.0)
     }
 }

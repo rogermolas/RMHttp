@@ -200,7 +200,6 @@
 					};
 					1D2CCCF920BD3F58002D0ACC = {
 						CreatedOnToolsVersion = 9.3;
-						TestTargetID = 1D2CCCE520BD3F56002D0ACC;
 					};
 				};
 			};
@@ -526,7 +525,6 @@
 			baseConfigurationReference = EF005D5647A97084342EC6F4 /* Pods-DemoTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = T824KGD436;
 				INFOPLIST_FILE = DemoTests/Info.plist;
@@ -539,7 +537,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Demo.app/Demo";
 			};
 			name = Debug;
 		};
@@ -548,7 +545,6 @@
 			baseConfigurationReference = 47C5601221E44B9E6D5FB7C6 /* Pods-DemoTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = T824KGD436;
 				INFOPLIST_FILE = DemoTests/Info.plist;
@@ -561,7 +557,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Demo.app/Demo";
 			};
 			name = Release;
 		};

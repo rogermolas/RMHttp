@@ -7,47 +7,34 @@
 //
 
 import XCTest
-import Foundation
 
 @testable import Demo
 import RMHttp
 
 class ValidationTest: XCTestCase {
     
-    func testStatusCodeSuccess() {
-        RMHttp.isDebug = true
+    func testRequestResponseValidation() {
+        let expectation = XCTestExpectation(description: "testRequestResponseValidation")
         let urlString = "https://httpbin.org/get"
         let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: nil, hearders: nil)
         RMHttp.response(request: request) { (response, error) in
             
-            guard error != nil else {
+            guard error == nil else {
                 XCTFail()
+                expectation.fulfill()
                 return
             }
  
-            guard let headers = response.allHeaders["headers"] as? [String: String] else {
+            guard let headers = response.allHeaders as? [String: String] else {
                 XCTFail()
+                expectation.fulfill()
                 return
             }
-            
+            XCTAssertEqual(response.statusCode, 200)
             XCTAssertEqual(headers["Content-Type"], "application/json")
-            XCTAssertEqual(request.urlRequest.httpMethod!, "POST")
+            XCTAssertEqual(request.urlRequest.httpMethod!, "GET")
+            expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 10.0)
     }
-    
-    func testStatus() {
-        RMHttp.isDebug = true
-        let urlString = "https://httpbin.org/get"
-        let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: nil, hearders: nil)
-        RMHttp.response(request: request) { (response, error) in
-            
-            guard error != nil else {
-                XCTFail()
-                return
-            }
-            XCTAssertEqual(request.urlRequest.httpMethod!, "POST")
-            XCTAssertNotEqual(response.allHeaders["content-type"] as! String, "application/json")
-        }
-    }
-    
 }

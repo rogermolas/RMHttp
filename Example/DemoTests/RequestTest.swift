@@ -21,62 +21,76 @@ class RequestTest: XCTestCase {
         ] as [String : Any]
     
     func testGETRequest() {
-        RMHttp.isDebug = true
+        let expectation = XCTestExpectation(description: "testGETRequest")
         let urlString = "https://httpbin.org/get"
         let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: nil, hearders: nil)
         RMHttp.JSON(request: request) { (response:JSONObject?, error) in
             guard error == nil else {
                 XCTFail()
+                expectation.fulfill()
                 return
             }
             if let data = response {
-                XCTAssert(true, "\(data)")
+                XCTAssertNotNil(data, "Expected response")
             }
+            expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testPOSTRequest() {
-        RMHttp.isDebug = true
+        let expectation = XCTestExpectation(description: "testPOSTRequest")
         let urlString = "https://httpbin.org/post"
         let request = RMRequest(urlString, method: .POST(.URLEncoding), parameters: nil, hearders: nil)
         RMHttp.JSON(request: request) { (response:JSONObject?, error) in
             guard error == nil else {
                 XCTFail()
+                expectation.fulfill()
                 return
             }
             if let data = response {
-                XCTAssert(true, "\(data)")
+                XCTAssertNotNil(data, "Expected response")
             }
+            expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testDELETERequest() {
+        let expectation = XCTestExpectation(description: "testDELETERequest")
         RMHttp.isDebug = true
         let urlString = "https://httpbin.org/delete"
         let request = RMRequest(urlString, method: .DELETE(.URLEncoding), parameters: nil, hearders: nil)
         RMHttp.JSON(request: request) { (response:JSONObject?, error) in
             guard error == nil else {
                 XCTFail()
+                expectation.fulfill()
                 return
             }
             if let data = response {
-                XCTAssert(true, "\(data)")
+                 XCTAssertNotNil(data, "Expected response")
             }
+            expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testGETwithParamsRequest() {
+        let expectation = XCTestExpectation(description: "testGETwithParamsRequest")
         RMHttp.isDebug = true
         let urlString = "https://httpbin.org/get"
         let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: params, hearders: nil)
         RMHttp.JSON(request: request) { (response:JSONObject?, error) in
             guard error == nil else {
                 XCTFail()
+                expectation.fulfill()
                 return
             }
             if let data = response {
-                XCTAssert(true, "\(data)")
+                 XCTAssertNotNil(data, "Expected response")
             }
+            expectation.fulfill()
         }
+        wait(for: [expectation], timeout: 10.0)
     }
 }
