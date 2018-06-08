@@ -16,7 +16,8 @@ class ViewController: UIViewController {
                 "POST with PARAMS",
                 "POST JSON BODY",
                 "DELETE",
-                "STRING RESPONSE"]
+                "STRING RESPONSE",
+                "CODABLE REQUEST"]
     
     override func viewDidLoad() {
         super.viewDidLoad()

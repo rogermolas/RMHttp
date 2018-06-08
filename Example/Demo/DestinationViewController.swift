@@ -11,6 +11,26 @@ import UIKit
 
 import RMHttp
 
+//[
+//    "args": {
+//    },
+//    "headers": {
+//        Accept = "*/*";
+//        "Accept-Encoding" = "br, gzip, deflate";
+//        "Accept-Language" = "en-us";
+//        Connection = close;
+//        Host = "httpbin.org";
+//        "User-Agent" = "Demo/1 CFNetwork/897.15 Darwin/17.5.0";
+//    },
+//    "origin": 180.232.71.19, "url": https:httpbin.org/get"
+//]
+
+struct Model: Decodable {
+    var args: String!
+    var headers:String!
+}
+
+
 class DestinationViewController: UIViewController {
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var activity: UIActivityIndicatorView!
@@ -97,11 +117,34 @@ class DestinationViewController: UIViewController {
         if type == "STRING RESPONSE" {
             reques(request: buildGETHTMLStringRequest(), expected: String())
         }
+        
+        if type == "CODABLE REQUEST" {
+            reques(request: GET, model: Model())
+        }
     }
     
     func reques<T:RMHttpProtocol>(request: RMRequest, expected: T) {
         RMHttp.isDebug = true
         RMHttp.JSON(request: request) { (response:T?, error) in
+            guard error == nil else {
+                self.title = "Response Error"
+                self.activity.stopAnimating()
+                if let err = error {
+                    self.textView.text = "\(err)"
+                }
+                return
+            }
+            if let data = response {
+                self.title = "Response Sucess"
+                self.textView.text = "\(data)"
+            }
+            self.activity.stopAnimating()
+        }
+    }
+    
+    func reques<T:Decodable>(request: RMRequest, model: T) {
+        RMHttp.isDebug = true
+        RMHttp.JSON(request: request, model: model) { (response:T?, error) in
             guard error == nil else {
                 self.title = "Response Error"
                 self.activity.stopAnimating()

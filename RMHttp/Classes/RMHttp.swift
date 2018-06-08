@@ -36,10 +36,26 @@ open class RMHttp {
 
 // RESTful API Call
 extension RMHttp {
+    
+    // Handle the object type response, on error invoke errorblock
     public class func JSON<T:RMHttpProtocol>(request: RMRequest, completionHandler: @escaping JSONHandler<T>) {
         requestManager.send(request: request) { (response, error) in
             
             guard error == nil else {
+                if isDebug {
+                    print("""
+                        
+                        -- ERROR --
+                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
+                        - Parametters: \(String(describing: request.parameters!))
+                        - Headers: \(String(describing: request.allHeaders))
+                        
+                        Response:
+                        - Status Code: \(String(describing: response!.statusCode!))
+                        
+                        \(error)
+                        """)
+                }
                 completionHandler(nil, error)
                 return
             }
@@ -82,11 +98,9 @@ extension RMHttp {
         }
     }
     
+    // Return raw response object and error object
     public class func response(request: RMRequest, completionHandler: @escaping ResponseHandler) {
         requestManager.send(request: request) { (response, error) in
-            
-            completionHandler(response!, error)
-            
             if isDebug {
                 print("""
                     
@@ -97,17 +111,70 @@ extension RMHttp {
                     
                     Response:
                     - Status Code \(String(describing: response!.statusCode!))
-                    
-                    """)
+                """)
             }
+            completionHandler(response!, error)
         }
     }
 }
 
 // MARK: - Codable
 extension RMHttp {
-    // TODO: Codable support
-//    public class func JSON<T: Decodable>(request: RMRequest, completionHandler: @escaping Handler<T>) {
-//
-//    }
+    public class func JSON<T: Decodable>(request:RMRequest, model: T, completionHandler:@escaping JSONHandler<T>) {
+        requestManager.send(request: request) { (response, error) in
+            guard error == nil else {
+                if isDebug {
+                    print("""
+                        
+                        -- ERROR --
+                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
+                        - Parametters: \(String(describing: request.parameters!))
+                        - Headers: \(String(describing: request.allHeaders))
+                        
+                        Response:
+                        - Status Code: \(String(describing: response!.statusCode!))
+                        
+                        \(error)
+                        """)
+                }
+                completionHandler(nil, error)
+                return
+            }
+            let object = response!.object(model: model)
+            if (object.isSuccess) {
+                if isDebug {
+                    print("""
+                        
+                        -- SUCCESS --
+                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
+                        - Parametters: \(String(describing: request.parameters!))
+                        - Headers: \(String(describing: request.allHeaders))
+                        
+                        Response:
+                        - Status Code \(String(describing: response!.statusCode!))
+                        
+                        \(object.value!)
+                        """)
+                }
+                completionHandler(object.value, nil)
+                
+            } else {
+                if isDebug {
+                    print("""
+                        
+                        -- ERROR --
+                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
+                        - Parametters: \(String(describing: request.parameters!))
+                        - Headers: \(String(describing: request.allHeaders))
+                        
+                        Response:
+                        - Status Code: \(String(describing: response!.statusCode!))
+                        
+                        \(object.error!)
+                        """)
+                }
+                completionHandler(nil, object.error)
+            }
+        }
+    }
 }

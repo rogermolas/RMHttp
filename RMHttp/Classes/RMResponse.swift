@@ -50,8 +50,10 @@ open class RMResponse {
     public var currentType: RMResponseType!
    
     public init() { }
-    
-    // Serialize JSON response via JSONSerialization
+}
+
+//MARK:- Serialize JSON response via JSONSerialization
+extension RMResponse {
     public func JSONResponse<T>(type: T.Type) -> RMHttpObject<T> {
         // Check if status code success but no response
         if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
@@ -75,7 +77,7 @@ open class RMResponse {
                 return data as! RMHttpObject<T>
             }
             return .error(data.error!)
-        
+            
         } else if (T.self == String.getType()) {   /// String
             let data =  StringResponse(encoding: .utf8)
             if data.isSuccess {
@@ -97,7 +99,7 @@ open class RMResponse {
 
 //MARK: - Serialize JSON response using Codable
 extension RMResponse {
-    public func JSONDecodableResponse<T>(model: T) -> RMHttpObject<T> where T: Decodable {
+    public func object<T:Decodable>(model: T) -> RMHttpObject<T> {
         // Check if status code success but no response
         if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
             let error = RMError()
@@ -107,7 +109,7 @@ extension RMResponse {
             return .error(error)
         }
         
-        let data =  decodableJSONResponseObject(expected: model)
+        let data =  decodableJSONResponseObject(model: model)
         if data.isSuccess {
             return data
         }
@@ -175,11 +177,10 @@ extension RMResponse {
     }
     
     
-    //MARK:- JSON Response
-    private func decodableJSONResponseObject<T>(expected: T) -> RMHttpObject<T> where T : Decodable {
-        let succesDictionary = ["success" : true] as! T
-        if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success(succesDictionary)}
-        
+    //MARK:- Decodable JSON Response
+    private func decodableJSONResponseObject<T:Decodable>(model: T) -> RMHttpObject<T> where T :Decodable {
+//        let succesDictionary = ["success" : true] as! T
+//        if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success(succesDictionary)}
         do {
             let object = try JSONDecoder().decode(T.self, from: self.data! as Data)
             return .success(object)
