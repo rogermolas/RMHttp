@@ -19,8 +19,28 @@ class ViewController: UIViewController {
                 "STRING RESPONSE",
                 "CODABLE REQUEST"]
     
+    
+    func decode<T:Decodable> (model: T.Type) {
+        let data =
+            """
+            {
+            "headers":
+            {
+                "accept" : "*/*",
+                "connection" : "close",
+                "host" : "httpbin.org",
+            },
+            "url" : "https:httpbin.org/get" }
+            """.data(using: .utf8)
+        
+        let myStruct = try! JSONDecoder().decode(model, from: data!)
+        print(myStruct)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        decode(model: TModel.self)
+        
         tableView.tableFooterView = UIView()
     }
 

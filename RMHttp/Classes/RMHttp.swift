@@ -120,7 +120,7 @@ extension RMHttp {
 
 // MARK: - Codable
 extension RMHttp {
-    public class func JSON<T: Decodable>(request:RMRequest, model: T, completionHandler:@escaping JSONHandler<T>) {
+    public class func JSON<T: Decodable>(request:RMRequest, model: T.Type, completionHandler:@escaping JSONHandler<T>) {
         requestManager.send(request: request) { (response, error) in
             guard error == nil else {
                 if isDebug {

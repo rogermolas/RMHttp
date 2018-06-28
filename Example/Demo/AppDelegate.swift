@@ -8,14 +8,23 @@
 
 import UIKit
 
+struct TModel: Decodable {
+    var url:String
+    var headers: Headers
+    
+    struct Headers: Decodable {
+        var accept: String
+        var connection: String
+        var host: String
+    }
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
         return true
     }
 

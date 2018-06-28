@@ -99,7 +99,7 @@ extension RMResponse {
 
 //MARK: - Serialize JSON response using Codable
 extension RMResponse {
-    public func object<T:Decodable>(model: T) -> RMHttpObject<T> {
+    public func object<T:Decodable>(model: T.Type) -> RMHttpObject<T> {
         // Check if status code success but no response
         if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
             let error = RMError()
@@ -178,11 +178,9 @@ extension RMResponse {
     
     
     //MARK:- Decodable JSON Response
-    private func decodableJSONResponseObject<T:Decodable>(model: T) -> RMHttpObject<T> where T :Decodable {
-//        let succesDictionary = ["success" : true] as! T
-//        if let response = httpResponse, successStatusCodes.contains(response.statusCode) { return .success(succesDictionary)}
+    private func decodableJSONResponseObject<T:Decodable>(model: T.Type) -> RMHttpObject<T> where T :Decodable {
         do {
-            let object = try JSONDecoder().decode(T.self, from: self.data! as Data)
+            let object = try JSONDecoder().decode(model, from: self.data! as Data)
             return .success(object)
         } catch let error {
             let error = RMError(error: error)

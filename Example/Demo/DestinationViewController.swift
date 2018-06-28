@@ -11,23 +11,17 @@ import UIKit
 
 import RMHttp
 
-//[
-//    "args": {
-//    },
-//    "headers": {
-//        Accept = "*/*";
-//        "Accept-Encoding" = "br, gzip, deflate";
-//        "Accept-Language" = "en-us";
-//        Connection = close;
-//        Host = "httpbin.org";
-//        "User-Agent" = "Demo/1 CFNetwork/897.15 Darwin/17.5.0";
-//    },
-//    "origin": 180.232.71.19, "url": https:httpbin.org/get"
-//]
-
+// Sample Decodable Struct
 struct Model: Decodable {
-    var args: String!
-    var headers:String!
+    var headers: objc_headers!
+    var origin: String!
+    var url:String!
+    
+    struct objc_headers: Decodable {
+        var Accept: String!
+        var Connection: String!
+        var Host: String!
+    }
 }
 
 
@@ -90,6 +84,12 @@ class DestinationViewController: UIViewController {
         let request = RMRequest(urlString, method: .DELETE(.URLEncoding), parameters: nil, hearders:nil)
         return request
     }
+    
+    var GETHTMLString: RMRequest {
+        let urlString = "https://httpbin.org/html"
+        let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: nil, hearders: nil)
+        return request
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -115,11 +115,11 @@ class DestinationViewController: UIViewController {
         }
         
         if type == "STRING RESPONSE" {
-            reques(request: buildGETHTMLStringRequest(), expected: String())
+            reques(request: GETHTMLString, expected: String())
         }
         
         if type == "CODABLE REQUEST" {
-            reques(request: GET, model: Model())
+            reques(request: GET, model: Model.self)
         }
     }
     
@@ -142,7 +142,7 @@ class DestinationViewController: UIViewController {
         }
     }
     
-    func reques<T:Decodable>(request: RMRequest, model: T) {
+    func reques<T:Decodable>(request: RMRequest, model: T.Type) {
         RMHttp.isDebug = true
         RMHttp.JSON(request: request, model: model) { (response:T?, error) in
             guard error == nil else {
@@ -153,17 +153,17 @@ class DestinationViewController: UIViewController {
                 }
                 return
             }
-            if let data = response {
+            if let data = response as? Model {
                 self.title = "Response Sucess"
-                self.textView.text = "\(data)"
+                self.textView.text = """
+                    \(data.origin!)
+                    \(data.url!)
+                    \(data.headers.Connection!)
+                    \(data.headers.Accept!)
+                    \(data.headers.Host!)
+                """
             }
             self.activity.stopAnimating()
         }
-    }
-    
-    func buildGETHTMLStringRequest() -> RMRequest {
-        let urlString = "https://httpbin.org/html"
-        let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: nil, hearders: nil)
-        return request
     }
 }
