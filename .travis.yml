@@ -14,4 +14,4 @@ before_install:
 
 script:
 - xcodebuild -workspace Example/Demo.xcworkspace -scheme Demo -sdk iphonesimulator
-- pod lib lint
+- pod lib lint RMHttp.podspec --allow-warnings

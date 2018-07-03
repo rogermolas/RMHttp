@@ -46,14 +46,14 @@ extension RMHttp {
                     print("""
                         
                         -- ERROR --
-                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
+                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(String(request.url.absoluteURL.absoluteString))
                         - Parametters: \(String(describing: request.parameters!))
                         - Headers: \(String(describing: request.allHeaders))
                         
                         Response:
                         - Status Code: \(String(describing: response!.statusCode!))
                         
-                        \(error)
+                        \(String(describing: error!))
                         """)
                 }
                 completionHandler(nil, error)
@@ -66,7 +66,7 @@ extension RMHttp {
                     print("""
                         
                         -- SUCCESS --
-                            Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
+                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(String(request.url.absoluteURL.absoluteString))
                             - Parametters: \(String(describing: request.parameters!))
                             - Headers: \(String(describing: request.allHeaders))
                         

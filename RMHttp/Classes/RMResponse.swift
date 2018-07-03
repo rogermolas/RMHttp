@@ -178,7 +178,7 @@ extension RMResponse {
     
     
     //MARK:- Decodable JSON Response
-    private func decodableJSONResponseObject<T:Decodable>(model: T.Type) -> RMHttpObject<T> where T :Decodable {
+    private func decodableJSONResponseObject<T>(model: T.Type) -> RMHttpObject<T> where T : Decodable {
         do {
             let object = try JSONDecoder().decode(model, from: self.data! as Data)
             return .success(object)
