@@ -47,6 +47,7 @@ open class RMError {
     public init(error: Error) {
         self.domain = "com.RMError.response"
         self.error = error
+        self.reason = error.localizedDescription
     }
     
     public init() {

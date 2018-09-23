@@ -43,6 +43,12 @@ extension RMHttp {
             
             guard error == nil else {
                 if isDebug {
+                    var reason = ""
+                    if response == nil {
+                        reason = "- Failed: \(String(describing: error!.reason!))"
+                    }  else {
+                        reason = "- Status Code: \(String(describing: response!.statusCode!))"
+                    }
                     print("""
                         
                         -- ERROR --
@@ -51,7 +57,7 @@ extension RMHttp {
                         - Headers: \(String(describing: request.allHeaders))
                         
                         Response:
-                        - Status Code: \(String(describing: response!.statusCode!))
+                        \(reason)
                         
                         \(String(describing: error!))
                         """)
@@ -124,17 +130,23 @@ extension RMHttp {
         requestManager.send(request: request) { (response, error) in
             guard error == nil else {
                 if isDebug {
+                    var reason = ""
+                    if response == nil {
+                        reason = "- Failed: \(String(describing: error!.reason!))"
+                    }  else {
+                        reason = "- Status Code: \(String(describing: response!.statusCode!))"
+                    }
                     print("""
                         
                         -- ERROR --
-                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
+                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(String(request.url.absoluteURL.absoluteString))
                         - Parametters: \(String(describing: request.parameters!))
                         - Headers: \(String(describing: request.allHeaders))
                         
                         Response:
-                        - Status Code: \(String(describing: response!.statusCode!))
+                        \(reason)
                         
-                        \(error)
+                        \(String(describing: error!))
                         """)
                 }
                 completionHandler(nil, error)
