@@ -42,7 +42,7 @@ private let successStatusCodes: Set<Int> = [204, 205]
 open class RMResponse {
     public var data: NSMutableData? = nil
     public var url: URL? = nil
-    public var statusCode: Int!
+    public var statusCode: Int = 0
     public var allHeaders: [AnyHashable : Any]!
     public var httpResponse: HTTPURLResponse? = nil
     public var timeline: RMTime = RMTime()
@@ -196,12 +196,10 @@ extension RMResponse: CustomStringConvertible {
         if let headers = allHeaders {
             desc.append("\(headers)")
         }
-        if let status = statusCode {
-            desc.append("\(status)")
-        }
         if let urlRequest = url {
             desc.append("\(urlRequest)")
-        }        
+        }
+        desc.append("\(statusCode)")
         return desc.joined(separator: " : ")
     }
 }

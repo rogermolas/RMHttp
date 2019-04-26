@@ -52,7 +52,12 @@ open class RMParser: NSObject {
     private var initializeResponseTime: CFAbsoluteTime?
     private var endTime: CFAbsoluteTime?
     
-    private var restrictedStatusCodes:Set<Int> = []
+    //https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
+    private var HTTPClientError:Set<Int> = [400, 401, 403, 404, 405, 408]
+    
+    //https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_Server_errors
+    private var HTTPServerError:Set<Int> = [500, 501, 502, 503, 504, 505, 511]
+
     
     public override init() { super.init() }
     
@@ -63,7 +68,6 @@ open class RMParser: NSObject {
         // Reference Callbacks and request
         completionHandler = callback
         currentRequest = request
-        restrictedStatusCodes = request.restrictStatusCodes
         
         // Session configuration
         var session = URLSession.shared
@@ -119,7 +123,8 @@ extension RMParser: URLSessionDataDelegate {
     }
     
     // MARK: Start recieving response
-    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse,
+                           completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
         let response = response as? HTTPURLResponse
         self.initializeResponseTime = CFAbsoluteTimeGetCurrent()
         
@@ -127,11 +132,16 @@ extension RMParser: URLSessionDataDelegate {
         self.currentResponse = RMResponse()
         self.currentResponse?.url = response?.url
         self.currentResponse?.httpResponse = response
-        self.currentResponse?.statusCode = response?.statusCode
+        self.currentResponse?.statusCode = response!.statusCode
         self.currentResponse?.allHeaders = response?.allHeaderFields
         
-        // Callback on Error
-        if let currentResponse = response, self.restrictedStatusCodes.contains(currentResponse.statusCode) {
+        // Check Client Request Error
+        if let currentResponse = response, self.HTTPClientError.contains(currentResponse.statusCode) {
+            self.isError = true
+        }
+        
+        // Check Server Response Error
+        if let currentResponse = response, self.HTTPServerError.contains(currentResponse.statusCode) {
             self.isError = true
         }
         
@@ -170,6 +180,7 @@ extension RMParser: URLSessionTaskDelegate {
                 // Add error object into response object
                 let responseError = RMError()
                 responseError.type = .statusCode
+                responseError.statusCode = self.currentResponse!.statusCode
                 responseError.response = self.currentResponse
                 responseError.request = self.currentRequest
                 self.completionHandler!(self.currentResponse, responseError)

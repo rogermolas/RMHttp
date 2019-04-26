@@ -43,23 +43,14 @@ extension RMHttp {
             
             guard error == nil else {
                 if isDebug {
-                    var reason = ""
-                    if response == nil {
-                        reason = "- Failed: \(String(describing: error!.reason!))"
-                    }  else {
-                        reason = "- Status Code: \(String(describing: response!.statusCode!))"
-                    }
                     print("""
-                        
+                        RMHTTP :
                         -- ERROR --
-                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(String(request.url.absoluteURL.absoluteString))
-                        - Parametters: \(String(describing: request.parameters!))
-                        - Headers: \(String(describing: request.allHeaders))
-                        
-                        Response:
-                        \(reason)
-                        
-                        \(String(describing: error!))
+                        - URL: \(request.url.absoluteURL.absoluteString)
+                        - Method: \(request.urlRequest.httpMethod!)
+                        - Parametters: \(request.parameters ?? [:])
+                        - Headers: \(request.allHeaders ?? [:])
+                        - Status Code: \(error!.statusCode)
                         """)
                 }
                 completionHandler(nil, error)
@@ -70,14 +61,13 @@ extension RMHttp {
             if (object.isSuccess) {
                 if isDebug {
                     print("""
-                        
+                        RMHTTP :
                         -- SUCCESS --
-                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(String(request.url.absoluteURL.absoluteString))
-                            - Parametters: \(String(describing: request.parameters!))
-                            - Headers: \(String(describing: request.allHeaders))
-                        
-                            Response:
-                            - Status Code \(String(describing: response!.statusCode!))
+                        - URL: \(request.url.absoluteURL.absoluteString)
+                        - Method: \(request.urlRequest.httpMethod!)
+                        - Parametters: \(request.parameters ?? [:])
+                        - Headers: \(request.allHeaders ?? [:])
+                        - Status Code: \(response!.statusCode)
                         
                         \(object.value!)
                         """)
@@ -87,16 +77,15 @@ extension RMHttp {
             } else {
                 if isDebug {
                     print("""
-                        
+                        RMHTTP :
                         -- ERROR --
-                            Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
-                            - Parametters: \(String(describing: request.parameters!))
-                            - Headers: \(String(describing: request.allHeaders))
+                        - URL: \(request.url.absoluteURL.absoluteString)
+                        - Method: \(request.urlRequest.httpMethod!)
+                        - Parametters: \(request.parameters ?? [:])
+                        - Headers: \(request.allHeaders ?? [:])
+                        - Status Code: \(object.error!.statusCode)
                         
-                            Response:
-                            - Status Code: \(String(describing: response!.statusCode!))
-                        
-                            \(object.error!)
+                        \(object.error!)
                         """)
                 }
                 completionHandler(nil, object.error)
@@ -109,15 +98,16 @@ extension RMHttp {
         requestManager.send(request: request) { (response, error) in
             if isDebug {
                 print("""
+                    RMHTTP :
+                    -- RESPONSE --
+                    - URL: \(request.url.absoluteURL.absoluteString)
+                    - Method: \(request.urlRequest.httpMethod!)
+                    - Parametters: \(request.parameters ?? [:])
+                    - Headers: \(request.allHeaders ?? [:])
+                    - Status Code: \(response!.statusCode)
                     
-                    -- SUCCESS --
-                    Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
-                    - Parametters: \(String(describing: request.parameters!))
-                    - Headers: \(String(describing: request.allHeaders))
-                    
-                    Response:
-                    - Status Code \(String(describing: response!.statusCode!))
-                """)
+                    \(response)
+                    """)
             }
             completionHandler(response!, error)
         }
@@ -130,23 +120,14 @@ extension RMHttp {
         requestManager.send(request: request) { (response, error) in
             guard error == nil else {
                 if isDebug {
-                    var reason = ""
-                    if response == nil {
-                        reason = "- Failed: \(String(describing: error!.reason!))"
-                    }  else {
-                        reason = "- Status Code: \(String(describing: response!.statusCode!))"
-                    }
                     print("""
-                        
+                        RMHTTP :
                         -- ERROR --
-                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(String(request.url.absoluteURL.absoluteString))
-                        - Parametters: \(String(describing: request.parameters!))
-                        - Headers: \(String(describing: request.allHeaders))
-                        
-                        Response:
-                        \(reason)
-                        
-                        \(String(describing: error!))
+                            - URL: \(request.url.absoluteURL.absoluteString)
+                            - Method: \(request.urlRequest.httpMethod!)
+                            - Parametters: \(request.parameters ?? [:])
+                            - Headers: \(request.allHeaders ?? [:])
+                            - Status Code: \(error!.statusCode)
                         """)
                 }
                 completionHandler(nil, error)
@@ -156,14 +137,13 @@ extension RMHttp {
             if (object.isSuccess) {
                 if isDebug {
                     print("""
-                        
+                        RMHTTP :
                         -- SUCCESS --
-                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
-                        - Parametters: \(String(describing: request.parameters!))
-                        - Headers: \(String(describing: request.allHeaders))
-                        
-                        Response:
-                        - Status Code \(String(describing: response!.statusCode!))
+                        - URL: \(request.url.absoluteURL.absoluteString)
+                        - Method: \(request.urlRequest.httpMethod!)
+                        - Parametters: \(request.parameters ?? [:])
+                        - Headers: \(request.allHeaders ?? [:])
+                        - Status Code: \(response!.statusCode)
                         
                         \(object.value!)
                         """)
@@ -173,14 +153,13 @@ extension RMHttp {
             } else {
                 if isDebug {
                     print("""
-                        
+                        RMHTTP :
                         -- ERROR --
-                        Request: \(String(describing: request.urlRequest.httpMethod!)) : \(request.url.absoluteURL)
-                        - Parametters: \(String(describing: request.parameters!))
-                        - Headers: \(String(describing: request.allHeaders))
-                        
-                        Response:
-                        - Status Code: \(String(describing: response!.statusCode!))
+                        - URL: \(request.url.absoluteURL.absoluteString)
+                        - Method: \(request.urlRequest.httpMethod!)
+                        - Parametters: \(request.parameters ?? [:])
+                        - Headers: \(request.allHeaders ?? [:])
+                        - Status Code: \(object.error!.statusCode)
                         
                         \(object.error!)
                         """)

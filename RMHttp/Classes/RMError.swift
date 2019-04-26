@@ -38,6 +38,7 @@ public enum ErrorType {
 open class RMError {
     public var domain: String? = nil
     public var type: ErrorType = .none
+    public var statusCode: Int = 0
     public var reason: String? = nil
     public var error: Error? = nil
     public var request: RMRequest? = nil
@@ -76,7 +77,7 @@ open class RMError {
             reason = "\(type!) : Response type mismatch"
             break
         case .noData:
-            reason = "Failed \(type!) : Status: \(String(describing: response?.url?.absoluteString)) : \(String(describing: response?.statusCode!))"
+            reason = "Failed \(type!) : Status: \(String(describing: response?.url?.absoluteString)) : \(String(describing: response?.statusCode))"
             break
         case .unknown:
             reason = "Unknown Error <\(type!)>"

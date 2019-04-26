@@ -119,7 +119,7 @@ class DestinationViewController: UIViewController {
         }
         
         if type == "CODABLE REQUEST" {
-            reques(request: GET, model: Model.self)
+            reques(request: GET, model: [Model].self)
         }
     }
     
@@ -158,9 +158,9 @@ class DestinationViewController: UIViewController {
                 self.textView.text = """
                     \(data.origin!)
                     \(data.url!)
-                    \(data.headers.Connection!)
-                    \(data.headers.Accept!)
-                    \(data.headers.Host!)
+                    \(data.headers.Connection ?? "null")
+                    \(data.headers.Accept ?? "null")
+                    \(data.headers.Host ?? "null")
                 """
             }
             self.activity.stopAnimating()
