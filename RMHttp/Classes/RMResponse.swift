@@ -59,6 +59,7 @@ extension RMResponse {
         if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
             let error = RMError()
             error.type = .statusCode
+            error.statusCode = self.statusCode
             error.setHttpResponse(error: RMHttpParsingError.noData(NSNull()))
             error.response = self
             return .error(error)
@@ -87,6 +88,7 @@ extension RMResponse {
         } else {
             let error = RMError()
             error.type = .parsing
+            error.statusCode = self.statusCode
             return .error(error)
         }
     }
@@ -104,6 +106,7 @@ extension RMResponse {
         if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
             let error = RMError()
             error.type = .statusCode
+            error.statusCode = self.statusCode
             error.setHttpResponse(error: RMHttpParsingError.noData(NSNull()))
             error.response = self
             return .error(error)
@@ -130,12 +133,14 @@ extension RMResponse {
             } else {
                 let error = RMError()
                 error.type = .parsing
+                error.statusCode = self.statusCode
                 error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
                 return .error(error)
             }
         } catch let error {
             let error = RMError(error: error)
             error.type = .parsing
+            error.statusCode = self.statusCode
             return .error(error)
         }
     }
@@ -154,12 +159,14 @@ extension RMResponse {
             } else {
                 let error = RMError()
                 error.type = .parsing
+                error.statusCode = self.statusCode
                 error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
                 return .error(error)
             }
         } catch let error {
             let error = RMError(error: error)
             error.type = .parsing
+            error.statusCode = self.statusCode
             return .error(error)
         }
     }
@@ -172,6 +179,7 @@ extension RMResponse {
         }
         let error = RMError()
         error.type = .parsing
+        error.statusCode = self.statusCode
         error.setHttpResponse(error: RMHttpParsingError.invalidType(String()))
         return .error(error)
     }
@@ -185,6 +193,7 @@ extension RMResponse {
         } catch let error {
             let error = RMError(error: error)
             error.type = .parsing
+            error.statusCode = self.statusCode
             return .error(error)
         }
     }

@@ -44,6 +44,7 @@ extension RMHttp {
             guard error == nil else {
                 if isDebug {
                     print("""
+                        
                         RMHTTP :
                         -- ERROR --
                         - URL: \(request.url.absoluteURL.absoluteString)
@@ -51,6 +52,8 @@ extension RMHttp {
                         - Parametters: \(request.parameters ?? [:])
                         - Headers: \(request.allHeaders ?? [:])
                         - Status Code: \(error!.statusCode)
+                        - Reason: \(error!.localizeDescription)
+                        
                         """)
                 }
                 completionHandler(nil, error)
@@ -61,6 +64,7 @@ extension RMHttp {
             if (object.isSuccess) {
                 if isDebug {
                     print("""
+                        
                         RMHTTP :
                         -- SUCCESS --
                         - URL: \(request.url.absoluteURL.absoluteString)
@@ -70,6 +74,7 @@ extension RMHttp {
                         - Status Code: \(response!.statusCode)
                         
                         \(object.value!)
+                        
                         """)
                 }
                 completionHandler(object.value, nil)
@@ -77,6 +82,7 @@ extension RMHttp {
             } else {
                 if isDebug {
                     print("""
+                        
                         RMHTTP :
                         -- ERROR --
                         - URL: \(request.url.absoluteURL.absoluteString)
@@ -86,6 +92,7 @@ extension RMHttp {
                         - Status Code: \(object.error!.statusCode)
                         
                         \(object.error!)
+                        
                         """)
                 }
                 completionHandler(nil, object.error)
@@ -98,6 +105,7 @@ extension RMHttp {
         requestManager.send(request: request) { (response, error) in
             if isDebug {
                 print("""
+                    
                     RMHTTP :
                     -- RESPONSE --
                     - URL: \(request.url.absoluteURL.absoluteString)
@@ -107,6 +115,7 @@ extension RMHttp {
                     - Status Code: \(response!.statusCode)
                     
                     \(response)
+                    
                     """)
             }
             completionHandler(response!, error)
@@ -121,6 +130,7 @@ extension RMHttp {
             guard error == nil else {
                 if isDebug {
                     print("""
+                        
                         RMHTTP :
                         -- ERROR --
                             - URL: \(request.url.absoluteURL.absoluteString)
@@ -128,6 +138,8 @@ extension RMHttp {
                             - Parametters: \(request.parameters ?? [:])
                             - Headers: \(request.allHeaders ?? [:])
                             - Status Code: \(error!.statusCode)
+                            - Reason: \(error!.localizeDescription)
+                        
                         """)
                 }
                 completionHandler(nil, error)
@@ -137,6 +149,7 @@ extension RMHttp {
             if (object.isSuccess) {
                 if isDebug {
                     print("""
+                        
                         RMHTTP :
                         -- SUCCESS --
                         - URL: \(request.url.absoluteURL.absoluteString)
@@ -146,6 +159,7 @@ extension RMHttp {
                         - Status Code: \(response!.statusCode)
                         
                         \(object.value!)
+                        
                         """)
                 }
                 completionHandler(object.value, nil)
@@ -153,6 +167,7 @@ extension RMHttp {
             } else {
                 if isDebug {
                     print("""
+                        
                         RMHTTP :
                         -- ERROR --
                         - URL: \(request.url.absoluteURL.absoluteString)
@@ -162,6 +177,7 @@ extension RMHttp {
                         - Status Code: \(object.error!.statusCode)
                         
                         \(object.error!)
+                        
                         """)
                 }
                 completionHandler(nil, object.error)

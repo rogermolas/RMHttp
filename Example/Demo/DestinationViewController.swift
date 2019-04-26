@@ -119,7 +119,7 @@ class DestinationViewController: UIViewController {
         }
         
         if type == "CODABLE REQUEST" {
-            reques(request: GET, model: [Model].self)
+            reques(request: GET, model: Model.self)
         }
     }
     

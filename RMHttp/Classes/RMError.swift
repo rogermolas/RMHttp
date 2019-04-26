@@ -39,6 +39,7 @@ open class RMError {
     public var domain: String? = nil
     public var type: ErrorType = .none
     public var statusCode: Int = 0
+    public var localizeDescription: String = ""
     public var reason: String? = nil
     public var error: Error? = nil
     public var request: RMRequest? = nil

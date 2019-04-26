@@ -180,6 +180,8 @@ extension RMParser: URLSessionTaskDelegate {
                 // Add error object into response object
                 let responseError = RMError()
                 responseError.type = .statusCode
+                responseError.localizeDescription = HTTPURLResponse.localizedString(
+                    forStatusCode: self.currentResponse!.statusCode)
                 responseError.statusCode = self.currentResponse!.statusCode
                 responseError.response = self.currentResponse
                 responseError.request = self.currentRequest
