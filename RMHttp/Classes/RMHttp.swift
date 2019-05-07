@@ -104,6 +104,7 @@ extension RMHttp {
     public class func response(request: RMRequest, completionHandler: @escaping ResponseHandler) {
         requestManager.send(request: request) { (response, error) in
             if isDebug {
+                
                 print("""
                     
                     RMHTTP :
@@ -114,7 +115,7 @@ extension RMHttp {
                     - Headers: \(request.allHeaders ?? [:])
                     - Status Code: \(response!.statusCode)
                     
-                    \(response)
+                    \(response!)
                     
                     """)
             }
