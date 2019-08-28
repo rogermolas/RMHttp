@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name         = 'RMHttp'
-    s.version      = '1.4'
+    s.version      = '1.4.1'
     s.summary      = 'Lightweight RESTful library for iOS and watchOS'
 
     s.homepage         = 'https://github.com/rogermolas/RMHttp'
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
     s.source           = { :git => 'https://github.com/rogermolas/RMHttp.git', :tag => s.version.to_s }
     s.social_media_url = 'https://twitter.com/roger_molas'
 
-    s.ios.deployment_target = '11.0'
+    s.ios.deployment_target = '10.0'
 
     s.source_files = 'RMHttp/Classes/*.swift'
 end

@@ -53,7 +53,7 @@ open class RMParser: NSObject {
     private var endTime: CFAbsoluteTime?
     
     //https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
-    private var HTTPClientError:Set<Int> = [400, 401, 403, 404, 405, 408]
+    private var HTTPClientError:Set<Int> = [400, 401, 403, 404, 405, 408, 409]
     
     //https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_Server_errors
     private var HTTPServerError:Set<Int> = [500, 501, 502, 503, 504, 505, 511]
@@ -137,6 +137,11 @@ extension RMParser: URLSessionDataDelegate {
         
         // Check Client Request Error
         if let currentResponse = response, self.HTTPClientError.contains(currentResponse.statusCode) {
+            self.isError = true
+        }
+        
+        // Check Client Request Error, from user define status code
+        if let currentResponse = response, (self.currentRequest?.restrictStatusCodes.contains(currentResponse.statusCode))! {
             self.isError = true
         }
         
