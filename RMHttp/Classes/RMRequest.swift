@@ -121,10 +121,6 @@ open class RMRequest {
 		self.urlRequest.httpBody = data
 	}
 	
-	public func addForm(params: [String : Any]) {
-		print(parameters)
-	}
-	
 	// Custom Session config
 	public func setSession(config: URLSessionConfiguration) {
 		sessionConfig = config
