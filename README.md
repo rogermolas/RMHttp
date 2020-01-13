@@ -16,6 +16,7 @@ RMHttp is a Lightweight REST library for iOS and watchOS.
 - [x]  URL / JSON  Parameter Encoding
 - [x]  HTTP Methods GET/POST/DELETE/PATCH/PUT based in  [RFC2616](https://tools.ietf.org/html/rfc2616#section-5.1.1)
 - [x]  Custom Request Builder / HEADERS / PARAMETERS
+- [x]  Form-Data Support
 - [x]  Dynamic Response Handler (JSONObject, JSONArray, String)
 - [x] Codable Support
 ##### TODO:
