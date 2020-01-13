@@ -32,24 +32,30 @@ private enum HeaderField: String {
 
 private enum HeaderValue: String {
     case JSON = "application/json"
-    case urlEncoded = "application/x-www-form-urlencoded; charset=utf-8"
+    case URLEncoded = "application/x-www-form-urlencoded; charset=utf-8"
+	case FormData = "multipart/form-data; boundary="
 }
 
 open class RMBuilder {
     
-    public func build(request: URLRequest?, parameter: [String: Any]?, method: RMHttpMethod<Encoding>) -> URLRequest {
+    public func build(request: URLRequest?,
+					  parameter: [String: Any]?,
+					  method: RMHttpMethod<Encoding>) -> URLRequest {
         
         var mUrlRequest = request
         guard parameter != nil else { return mUrlRequest! }
         
-        if method.encoding == .URLEncoding { // URL Default
+        if method.encoder == .URLEncoding { // URL Default
             // Default Encoding
             if encodeParametersInUlr(method: method) {
                 mUrlRequest = buildQuery(request!, parameters: parameter!)
             } else {
                 mUrlRequest = buildHttpBodyQuery(request!, parameters: parameter!)
             }
-        } else { // JSON Body
+		} else if method.encoder == .FomDataEncoding { // Form data Body
+			mUrlRequest = addForm(request: request, parameters: parameter!)
+        
+		} else { // JSON Body
             mUrlRequest = buildJSONHttpBody(request!, parameters: parameter!)
             if mUrlRequest?.httpBody == nil {
                 let data = try! JSONSerialization.data(withJSONObject: parameter ?? "", options: [])
@@ -102,13 +108,13 @@ open class RMBuilder {
         var mUrlRequest = urlRequest
         let paramString = build(parameters)
         if mUrlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
-            mUrlRequest.setValue(HeaderValue.urlEncoded.rawValue, forHTTPHeaderField: HeaderField.contentType.rawValue)
+            mUrlRequest.setValue(HeaderValue.URLEncoded.rawValue, forHTTPHeaderField: HeaderField.contentType.rawValue)
         }
         mUrlRequest.httpBody = paramString.data(using: .utf8, allowLossyConversion: false)
         return mUrlRequest
     }
     
-    // JSON Data Encoding
+    //MARK: - JSON Data Encoding
     private func buildJSONHttpBody(_ urlRequest: URLRequest, parameters: [String:Any]) -> URLRequest? {
         var mUrlRequest = urlRequest
         do {
@@ -122,6 +128,23 @@ open class RMBuilder {
         }
         return urlRequest
     }
+	
+	//MARK: - Form-data Encoding
+	private func addForm(request: URLRequest?, parameters: [String: Any]) -> URLRequest {
+		var mUrlRequest = request
+		let boundary = UUID().uuidString
+		mUrlRequest?.setValue("multipart/form-data; boundary=\(boundary)",
+			forHTTPHeaderField: "Content-Type")
+		var data = Data()
+		for key in parameters.keys.sorted(by: <) {
+			let value = parameters[key]!
+			data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+			data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
+			data.append("\(value)".data(using: .utf8)!)
+		}
+		mUrlRequest?.httpBody = data
+		return mUrlRequest!
+	}
     
     // Check if parameters encoded to HttpBody or within URL
     private func encodeParametersInUlr(method: RMHttpMethod<Encoding>) -> Bool {

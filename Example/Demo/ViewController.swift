@@ -17,7 +17,8 @@ class ViewController: UIViewController {
                 "POST JSON BODY",
                 "DELETE",
                 "STRING RESPONSE",
-                "CODABLE REQUEST"]
+                "CODABLE REQUEST",
+				"FORM-DATA REQUEST"]
     
     
     func decode<T:Decodable> (model: T.Type) {

@@ -30,6 +30,7 @@ open class RMRequest {
     public var urlRequest:URLRequest!
     public var url:URL!
     public var parameters:[String : Any]? = nil
+	public var requestEncoding: String = ""
     public var allHeaders:[String : String]? = nil
     public var sessionConfig:URLSessionConfiguration!
     public var restrictStatusCodes:Set<Int> = []  // e.g 404, 500, return Error
@@ -38,7 +39,7 @@ open class RMRequest {
     public var timeoutIntervalForResource: TimeInterval = 30
     public var httpMaximumConnectionsPerHost: Int = 1
     
-    private func defaulSessionConfig() {
+	private func defaulSessionConfig() {
         sessionConfig = URLSessionConfiguration.default
         sessionConfig.allowsCellularAccess = true // use cellular data
         sessionConfig.timeoutIntervalForRequest = timeoutIntervalForRequest // timeout per request
@@ -52,6 +53,7 @@ open class RMRequest {
                 hearders: [String : String]!) {
         
         self.url = URL(string: urlString)
+		self.requestEncoding = method.encoder.encoding
         self.urlRequest = URLRequest(url: url!)
         self.setHttp(method: method)
         self.setHttp(hearders: hearders)
@@ -99,11 +101,34 @@ open class RMRequest {
     public func setValue(value: String, headerField: String) {
         self.urlRequest.setValue(value, forHTTPHeaderField: headerField)
     }
-    
-    // Custom Session config
-    public func setSession(config: URLSessionConfiguration) {
-        sessionConfig = config
-    }
+	
+	// Form-Data
+	public func setFormData(fields: [String : Any]) {
+		let boundary = UUID().uuidString
+		self.urlRequest.setValue("multipart/form-data; boundary=\(boundary)",
+			forHTTPHeaderField: "Content-Type")
+		var data = Data()
+		for (key, value) in fields {
+			data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+			data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
+			data.append("\(value)".data(using: .utf8)!)
+		}
+		self.urlRequest.httpBody = data
+	}
+	
+	// Custom Http body
+	public func setHttpBody(data: Data) {
+		self.urlRequest.httpBody = data
+	}
+	
+	public func addForm(params: [String : Any]) {
+		print(parameters)
+	}
+	
+	// Custom Session config
+	public func setSession(config: URLSessionConfiguration) {
+		sessionConfig = config
+	}
 }
 
 extension RMRequest: CustomStringConvertible {

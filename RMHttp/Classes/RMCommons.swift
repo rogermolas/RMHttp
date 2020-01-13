@@ -39,6 +39,16 @@ public protocol RMHttpProtocol {
 public enum Encoding {
     case URLEncoding
     case JSONEncoding
+	case FomDataEncoding
+	
+	// Parameters Encoding
+	public var encoding: String {
+		switch self {
+			case .URLEncoding: return "URL Default/Query Encoding"
+			case .JSONEncoding: return "JSON Body Encoding"
+			case .FomDataEncoding: return "Fom-data Encoding"
+		}
+	}
 }
 
 // HTTP Methods
@@ -50,7 +60,7 @@ public enum RMHttpMethod<Encoder> {
     case PATCH(Encoder)
     
     // Parameters Encoding
-    public var encoding: Encoder {
+    public var encoder: Encoder {
         switch self {
             case .GET (let encoder): return encoder
             case .POST(let encoder): return encoder

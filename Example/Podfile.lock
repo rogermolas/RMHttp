@@ -1,5 +1,5 @@
 PODS:
-  - RMHttp (1.4.1)
+  - RMHttp (1.5.0)
 
 DEPENDENCIES:
   - RMHttp (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  RMHttp: b649a2dd258d4c5dd0aededa35b58a59c7247499
+  RMHttp: fce70e5558179acde55ccb99ef7e0eeb1e9b3314
 
 PODFILE CHECKSUM: 823b377b5b04076a920183be778a664128b2ad2d
 
