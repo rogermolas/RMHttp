@@ -98,9 +98,6 @@ class DestinationViewController: UIViewController {
 	var FORM_DATA: RMRequest {
 		let params =  [ "name":"Roger" ]
 		let urlString = "https://httpbin.org/post"
-//		let rmRequest = RMRequest(url: URL(string: urlString)!)
-//		rmRequest.setHttp(method: .POST(.FomDataEncoding))
-//		rmRequest.setFormData(fields: params)
 		let request = RMRequest(urlString, method: .POST(.FomDataEncoding), parameters: params, hearders: nil)
 		return request
 	}
