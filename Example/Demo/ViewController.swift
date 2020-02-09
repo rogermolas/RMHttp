@@ -18,7 +18,9 @@ class ViewController: UIViewController {
                 "DELETE",
                 "STRING RESPONSE",
                 "CODABLE REQUEST",
-				"FORM-DATA REQUEST"]
+				"FORM-DATA REQUEST",
+				"CUSTOM PARAM REQUEST GET",
+				"CUSTOM PARAM REQUEST POST"]
     
     
     func decode<T:Decodable> (model: T.Type) {

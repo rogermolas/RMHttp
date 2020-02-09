@@ -27,8 +27,13 @@
 import Foundation
 
 public struct RMParams {
-	var key: String
-	var value: Any
+	public var key: String
+	public var value: Any
+	
+	public init(key:String, value: Any) {
+		self.key = key
+		self.value = key
+	}
 }
 
 extension RMParams: CustomStringConvertible {

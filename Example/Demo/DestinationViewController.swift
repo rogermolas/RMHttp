@@ -98,7 +98,32 @@ class DestinationViewController: UIViewController {
 	var FORM_DATA: RMRequest {
 		let params =  [ "name":"Roger" ]
 		let urlString = "https://httpbin.org/post"
-		let request = RMRequest(urlString, method: .POST(.FomDataEncoding), parameters: params, hearders: nil)
+		let request = RMRequest(urlString, method: .POST(.FomDataEncoding),
+								parameters: params, hearders: nil)
+		return request
+	}
+	
+	var CUSTOM_PARAM_GET: RMRequest {
+		let item = RMParams(key: "name", value: "roger")
+		let item2 = RMParams(key: "name", value: "molas")
+		let params = [item, item2]
+		
+		let urlString = "https://httpbin.org/get"
+		let request = RMRequest(url: URL(string: urlString)!)
+		request.set(parameters: params, method: .GET(.URLEncoding))
+		request.setHttp(method: .GET(.URLEncoding))
+		return request
+	}
+	
+	var CUSTOM_PARAM_POST: RMRequest {
+		let item = RMParams(key: "name", value: "roger")
+		let item2 = RMParams(key: "name", value: "molas")
+		let params = [item, item2]
+		
+		let urlString = "https://httpbin.org/post"
+		let request = RMRequest(url: URL(string: urlString)!)
+		request.set(parameters: params, method: .POST(.URLEncoding))
+		request.setHttp(method: .POST(.URLEncoding))
 		return request
 	}
 
@@ -130,6 +155,12 @@ class DestinationViewController: UIViewController {
         }
 		if type == "FORM-DATA REQUEST" {
 			reques(request: FORM_DATA, expected: JSONObject())
+		}
+		if type == "CUSTOM PARAM REQUEST GET"{
+			reques(request: CUSTOM_PARAM_GET, expected: JSONObject())
+		}
+		if type == "CUSTOM PARAM REQUEST POST"{
+			reques(request: CUSTOM_PARAM_POST, expected: JSONObject())
 		}
     }
     

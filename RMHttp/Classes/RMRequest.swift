@@ -54,8 +54,8 @@ open class RMRequest {
                 hearders: [String : String]!) {
         
         self.url = URL(string: urlString)
-		self.requestEncoding = method.encoder.encoding
         self.urlRequest = URLRequest(url: url!)
+		self.requestEncoding = method.encoder.encoding
         self.setHttp(method: method)
         self.setHttp(hearders: hearders)
         self.set(parameters: parameters, method: method)
@@ -85,6 +85,8 @@ open class RMRequest {
 	// Set and append parameters to base URL
 	public func set(parameters: [RMParams], method: RMHttpMethod<Encoding>) {
 		self.parameters = [String:Any]()
+		self.requestEncoding = method.encoder.encoding
+		self.setHttp(method: method)
 		let request = RMBuilder().build(request: urlRequest, parameter: parameters, method: method)
 		self.urlRequest = request
 	}
