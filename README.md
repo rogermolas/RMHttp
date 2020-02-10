@@ -63,12 +63,12 @@ Encoding are declared in public enum `Encoding`
 `JSONObject` - a representation of `Dictionary<String, Any>`
 ```swift
 {
-"data" : "value",
-"isBoolean" : true,
-"list": [
-"object1",
-"object2"
-]
+	"data" : "value",
+	"isBoolean" : true,
+	"list": [
+		"object1",
+		"object2"
+	]
 }
 ```
 
@@ -76,29 +76,29 @@ Encoding are declared in public enum `Encoding`
 
 ```swift
 [
-{ "data1" : "value1"},
-{ "data2" : "value2"},
-{ "data3" : "value3"},
+	{ "data1" : "value1"},
+	{ "data2" : "value2"},
+	{ "data3" : "value3"},
 ]
 ```
 
 `String`
 Any String respresentation (e.g HTML String, XML String, Plain Text)
 
-##### Building Request
-**Building request with parameters from Dictionary type**
+### Building Request
+###### Building request with parameters from Dictionary type
 ```swift
 let params = [
-"string":"Ipsum",   // String
-"number": 100,      // Number
-"boolean":true      // Boolean
+	"string":"Ipsum",   // String
+	"number": 100,      // Number
+	"boolean":true      // Boolean
 ] as [String : Any]
 
 let urlString = "https://httpbin.org/get"
 let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: params, hearders: nil)
 ```
 
-**Building request with parameters from `RMParams` container**
+###### Building request with parameters from `RMParams` container
 URL query representation `names[]=lorem&names[]=ipsum&names[]=dolor&`
 ```swift
 let lorem = RMParams(key: "names[]", value: "lorem")
@@ -111,39 +111,38 @@ request = RMRequest(urlString, .GET(.URLEncoding), params, nil)
 return request
 ```
 
-##### Chained Response Handlers
-
+### Chained Response Handlers
 ###### Expecting Array object Response
 ```swift
 RMHttp.JSON(request: request) { (response:JSONArray?, error) in
-guard error == nil else {
-self.title = "Response Error"
-self.activity.stopAnimating()
-self.textView.text = "\(err)"
-return
-}
-self.activity.stopAnimating()
-if let data = response {
-self.title = "Response Sucess"
-self.textView.text = "\(data)"
-}
+	guard error == nil else {
+		self.title = "Response Error"
+		self.activity.stopAnimating()
+		self.textView.text = "\(err)"
+		return
+	}
+	self.activity.stopAnimating()
+	if let data = response {
+		self.title = "Response Sucess"
+		self.textView.text = "\(data)"
+	}
 }
 ```
 
 ###### Expecting JSON object Response
 ```swift
 RMHttp.JSON(request: request) { (response:JSONObject?, error) in
-guard error == nil else {
-self.title = "Response Error"
-self.activity.stopAnimating()
-self.textView.text = "\(err)"
-return
-}
-self.activity.stopAnimating()
-if let data = response {
-self.title = "Response Sucess"
-self.textView.text = "\(data)"
-}
+	guard error == nil else {
+		self.title = "Response Error"
+		self.activity.stopAnimating()
+		self.textView.text = "\(err)"
+		return
+	}
+	self.activity.stopAnimating()
+	if let data = response {
+		self.title = "Response Sucess"
+		self.textView.text = "\(data)"
+	}
 }
 ```
 
@@ -152,20 +151,20 @@ Generic method that return HTTP response has parameter  `data`  that comply to `
 public class func JSON<T:RMHttpProtocol>(request: RMRequest, completionHandler: @escaping Handler<T>)
 ```
 
-##### FORM-DATA
+### FORM-DATA
 
-**Add fields from dictionary type**
+###### Add fields from dictionary type
 ```swift
 let params =  [
-"name":"lorem", 
-"lastName":"ipsum"
+	"name":"lorem", 
+	"lastName":"ipsum"
 ]
 let urlString = "https://httpbin.org/post"
 let request = RMRequest(urlString, .POST(.FomDataEncoding), params, nil)
 return request
 ```
 
-**Add file**
+###### Add file
 See [Media Types](https://www.iana.org/assignments/media-types/media-types.xhtml)
 ```swift
 let request = RMRequest(url: URL(string: urlString)!)
@@ -173,7 +172,8 @@ request.addForm(field: "file", file: imgData, fileName: "image.jpeg", mimeType: 
 request.setHttp(method: .POST(.FomDataEncoding))
 return request
 ```
-**Or manually add field**
+
+###### Or manually add field
 ```swift
 let request = RMRequest(url: URL(string: urlString)!)
 request.addForm(fieldName: "field1", value: "lorem ipsum")
