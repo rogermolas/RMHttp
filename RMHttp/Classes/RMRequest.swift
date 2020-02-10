@@ -2,7 +2,7 @@
  MIT License
  
  RMRequest.swift
- Copyright (c) 2018 Roger Molas
+ Copyright (c) 2018-2020 Roger Molas
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -174,7 +174,7 @@ extension RMRequest {
 	}
 	
 	// Form-Data adding file to request
-	public func addForm(field: String, file: Data, fileName: String, mimeType:String) {
+	public func addForm(field: String, file: Data, fileName: String, mimeType: String) {
 		if urlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
 			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)",
 				forHTTPHeaderField: HeaderField.contentType.rawValue)
@@ -182,7 +182,7 @@ extension RMRequest {
 		httpBody.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
 		httpBody.append("Content-Disposition: form-data; name=\"\(field)\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
 		httpBody.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
-		httpBody.append(file)
+		httpBody.append(file) // In data representation
 		httpBody.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
 		self.urlRequest.httpBody = httpBody
 	}

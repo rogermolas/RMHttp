@@ -1,7 +1,7 @@
 /*
  MIT License
 
- RMParams.swift
+ RMFormDataFile.swift
  Copyright (c) 2018-2020 Roger Molas
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,26 +26,17 @@
 
 import Foundation
 
-public struct RMParams {
-	public var key: String
-	public var value: Any
+public struct RMFormDataFile {
+	public var fieldName: String
+	public var file: Data
+	public var fileName: String
+	public var mimeType: String
 	
-	public init(key:String, value: Any) {
-		self.key = key
-		self.value = value
-	}
-}
-
-extension RMParams: CustomStringConvertible {
-	public var description: String {
-		var desc: [String] = []
-		desc.append("\(key):\(value)")
-		return desc.joined(separator: " , ")
-	}
 	
-	public var dictionary: [String: Any] {
-		return [
-			"\(key)": "\(value)",
-		]
+	public init(_ fieldName:String, _ file:Data, _ fileName: String, _ mimeType:String) {
+		self.fieldName = fieldName
+		self.file = file
+		self.fileName = fileName
+		self.mimeType = mimeType
 	}
 }
