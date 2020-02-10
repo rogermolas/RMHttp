@@ -63,12 +63,12 @@ Encoding are declared in public enum `Encoding`
 `JSONObject` - a representation of `Dictionary<String, Any>`
 ```swift
 {
-    "data" : "value",
-    "isBoolean" : true,
-    "list": [
-        "object1",
-        "object2"
-    ]
+"data" : "value",
+"isBoolean" : true,
+"list": [
+"object1",
+"object2"
+]
 }
 ```
 
@@ -76,9 +76,9 @@ Encoding are declared in public enum `Encoding`
 
 ```swift
 [
-    { "data1" : "value1"},
-    { "data2" : "value2"},
-    { "data3" : "value3"},
+{ "data1" : "value1"},
+{ "data2" : "value2"},
+{ "data3" : "value3"},
 ]
 ```
 
@@ -86,7 +86,7 @@ Encoding are declared in public enum `Encoding`
 Any String respresentation (e.g HTML String, XML String, Plain Text)
 
 ##### Building Request
-
+**Building request with parameters from Dictionary type**
 ```swift
 let params = [
 "string":"Ipsum",   // String
@@ -98,39 +98,52 @@ let urlString = "https://httpbin.org/get"
 let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: params, hearders: nil)
 ```
 
+**Building request with parameters from `RMParams` container**
+URL query representation `names[]=lorem&names[]=ipsum&names[]=dolor&`
+```swift
+let lorem = RMParams(key: "names[]", value: "lorem")
+let ipsum = RMParams(key: "names[]", value: "ipsum")
+let dolor = RMParams(key: "names[]", value: "dolor")
+let params = [lorem, ipsum, dolor]
+
+let urlString = "https://httpbin.org/post"
+request = RMRequest(urlString, .GET(.URLEncoding), params, nil)
+return request
+```
+
 ##### Chained Response Handlers
 
 ###### Expecting Array object Response
 ```swift
 RMHttp.JSON(request: request) { (response:JSONArray?, error) in
-    guard error == nil else {
-        self.title = "Response Error"
-        self.activity.stopAnimating()
-        self.textView.text = "\(err)"
-        return
-    }
-    self.activity.stopAnimating()
-    if let data = response {
-        self.title = "Response Sucess"
-        self.textView.text = "\(data)"
-    }
+guard error == nil else {
+self.title = "Response Error"
+self.activity.stopAnimating()
+self.textView.text = "\(err)"
+return
+}
+self.activity.stopAnimating()
+if let data = response {
+self.title = "Response Sucess"
+self.textView.text = "\(data)"
+}
 }
 ```
 
 ###### Expecting JSON object Response
 ```swift
 RMHttp.JSON(request: request) { (response:JSONObject?, error) in
-    guard error == nil else {
-        self.title = "Response Error"
-        self.activity.stopAnimating()
-        self.textView.text = "\(err)"
-        return
-    }
-    self.activity.stopAnimating()
-    if let data = response {
-        self.title = "Response Sucess"
-        self.textView.text = "\(data)"
-    }
+guard error == nil else {
+self.title = "Response Error"
+self.activity.stopAnimating()
+self.textView.text = "\(err)"
+return
+}
+self.activity.stopAnimating()
+if let data = response {
+self.title = "Response Sucess"
+self.textView.text = "\(data)"
+}
 }
 ```
 
@@ -139,6 +152,33 @@ Generic method that return HTTP response has parameter  `data`  that comply to `
 public class func JSON<T:RMHttpProtocol>(request: RMRequest, completionHandler: @escaping Handler<T>)
 ```
 
+##### FORM-DATA
+
+**Add fields from dictionary type**
+```swift
+let params =  [
+"name":"lorem", 
+"lastName":"ipsum"
+]
+let urlString = "https://httpbin.org/post"
+let request = RMRequest(urlString, .POST(.FomDataEncoding), params, nil)
+return request
+```
+
+**Add file**
+See [Media Types](https://www.iana.org/assignments/media-types/media-types.xhtml)
+```swift
+let request = RMRequest(url: URL(string: urlString)!)
+request.addForm(field: "file", file: imgData, fileName: "image.jpeg", mimeType: "image/jpeg")
+request.setHttp(method: .POST(.FomDataEncoding))
+return request
+```
+**Or manually add field**
+```swift
+let request = RMRequest(url: URL(string: urlString)!)
+request.addForm(fieldName: "field1", value: "lorem ipsum")
+request.addForm(fieldName: "field2", value: "sit dolor amet")
+```
 ## Author
 
 rogermolas, contact@rogermolas.com
@@ -148,15 +188,10 @@ rogermolas, contact@rogermolas.com
 
 The MIT License (MIT)
 
-Copyright (c) 2018 Roger Molas
+Copyright (c) 2018-2020 Roger Molas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-
-
-
