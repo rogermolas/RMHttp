@@ -86,7 +86,7 @@ Encoding are declared in public enum `Encoding`
 Any String respresentation (e.g HTML String, XML String, Plain Text)
 
 ### Building Request
-###### Building request with parameters from Dictionary type
+##### Building request with parameters from Dictionary type
 ```swift
 let params = [
 	"string":"Ipsum",   // String
@@ -98,7 +98,7 @@ let urlString = "https://httpbin.org/get"
 let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: params, hearders: nil)
 ```
 
-###### Building request with parameters from `RMParams` container
+##### Building request with parameters from `RMParams` container
 URL query representation `names[]=lorem&names[]=ipsum&names[]=dolor&`
 ```swift
 let lorem = RMParams(key: "names[]", value: "lorem")
@@ -112,7 +112,7 @@ return request
 ```
 
 ### Chained Response Handlers
-###### Expecting Array object Response
+##### Expecting Array object Response
 ```swift
 RMHttp.JSON(request: request) { (response:JSONArray?, error) in
 	guard error == nil else {
@@ -129,7 +129,7 @@ RMHttp.JSON(request: request) { (response:JSONArray?, error) in
 }
 ```
 
-###### Expecting JSON object Response
+##### Expecting JSON object Response
 ```swift
 RMHttp.JSON(request: request) { (response:JSONObject?, error) in
 	guard error == nil else {
@@ -153,7 +153,7 @@ public class func JSON<T:RMHttpProtocol>(request: RMRequest, completionHandler: 
 
 ### FORM-DATA
 
-###### Add fields from dictionary type
+##### Add fields from dictionary type
 ```swift
 let params =  [
 	"name":"lorem", 
@@ -164,7 +164,7 @@ let request = RMRequest(urlString, .POST(.FomDataEncoding), params, nil)
 return request
 ```
 
-###### Add file
+##### Add file
 See [Media Types](https://www.iana.org/assignments/media-types/media-types.xhtml)
 ```swift
 let request = RMRequest(url: URL(string: urlString)!)
@@ -173,7 +173,7 @@ request.setHttp(method: .POST(.FomDataEncoding))
 return request
 ```
 
-###### Or manually add field
+##### Or manually add field
 ```swift
 let request = RMRequest(url: URL(string: urlString)!)
 request.addForm(fieldName: "field1", value: "lorem ipsum")
