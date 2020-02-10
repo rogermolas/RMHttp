@@ -38,6 +38,10 @@ open class RMRequest {
     public var timeoutIntervalForRequest: TimeInterval = 30
     public var timeoutIntervalForResource: TimeInterval = 30
     public var httpMaximumConnectionsPerHost: Int = 1
+	
+	// Form-Data
+	public var httpBody = Data()
+	private let boundary = UUID().uuidString
     
 	private func defaulSessionConfig() {
         sessionConfig = URLSessionConfiguration.default
@@ -159,46 +163,28 @@ extension RMRequest {
 	
 	// Form-Data adding single field
 	public func addForm(fieldName:String, value: Any) {
-		let boundary = UUID().uuidString
 		if urlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
 			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)",
 				forHTTPHeaderField: HeaderField.contentType.rawValue)
 		}
-		var data = Data()
-		data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-		data.append("Content-Disposition: form-data; name=\"\(fieldName)\"\r\n\r\n".data(using: .utf8)!)
-		data.append("\(value)".data(using: .utf8)!)
-		
-		if self.urlRequest.httpBody == nil {
-			// Set data for the first time
-			self.urlRequest.httpBody = data
-		} else {
-			// Append to an existing instance
-			self.urlRequest.httpBody?.append(data)
-		}
+		httpBody.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+		httpBody.append("Content-Disposition: form-data; name=\"\(fieldName)\"\r\n\r\n".data(using: .utf8)!)
+		httpBody.append("\(value)".data(using: .utf8)!)
+		self.urlRequest.httpBody = httpBody
 	}
 	
 	// Form-Data adding file to request
 	public func addForm(field: String, file: Data, fileName: String, mimeType:String) {
-		let boundary = UUID().uuidString
 		if urlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
 			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)",
 				forHTTPHeaderField: HeaderField.contentType.rawValue)
 		}
-		var data = Data()
-		data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-		data.append("Content-Disposition: form-data; name=\"\(field)\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
-		data.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
-		data.append(file)
-		data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-		
-		if self.urlRequest.httpBody == nil {
-			// Set data for the first time
-			self.urlRequest.httpBody = data
-		} else {
-			// Append to an existing instance
-			self.urlRequest.httpBody?.append(data)
-		}
+		httpBody.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+		httpBody.append("Content-Disposition: form-data; name=\"\(field)\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+		httpBody.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+		httpBody.append(file)
+		httpBody.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+		self.urlRequest.httpBody = httpBody
 	}
 }
 
