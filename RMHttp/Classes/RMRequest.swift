@@ -146,17 +146,27 @@ extension RMRequest {
 	}
 	
 	// Form-Data from params
-	public func setFormData(fields: [String : Any]) {
+	public func setFormData(fields: [String : Any], _ files: [RMFormDataFile]? = nil) {
 		let boundary = UUID().uuidString
 		if urlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
-			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)",
-				forHTTPHeaderField: HeaderField.contentType.rawValue)
+			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)", forHTTPHeaderField: HeaderField.contentType.rawValue)
 		}
 		var data = Data()
 		for (key, value) in fields {
 			data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
 			data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
 			data.append("\(value)".data(using: .utf8)!)
+		}
+		
+		// Add File fields (optional)
+		if files != nil {
+			for file in files! {
+				data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+				data.append("Content-Disposition: form-data; name=\"\(file.fieldName)\"; filename=\"\(file.fileName)\"\r\n".data(using: .utf8)!)
+				data.append("Content-Type: \(file.mimeType)\r\n\r\n".data(using: .utf8)!)
+				data.append(file.file) // In data representation
+				data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+			}
 		}
 		self.urlRequest.httpBody = data // One time set data body
 	}
