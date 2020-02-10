@@ -49,9 +49,9 @@ open class RMRequest {
 	
 	//MARK: - Building default request configurations
     public init(_ urlString: String,
-                method: RMHttpMethod<Encoding>,
-                parameters: [String : Any]!,
-                hearders: [String : String]!) {
+                _ method: RMHttpMethod<Encoding>,
+                _ parameters: [String : Any]!,
+                _ hearders: [String : String]!) {
         
         self.url = URL(string: urlString)
         self.urlRequest = URLRequest(url: url!)
@@ -61,6 +61,21 @@ open class RMRequest {
         self.set(parameters: parameters, method: method)
         defaulSessionConfig()
     }
+	
+	//MARK: - Building request configurations with params wrapper
+	public init(_ urlString: String,
+				_ method: RMHttpMethod<Encoding>,
+				_ rm_params:[RMParams],
+				_ hearders: [String : String]!) {
+		
+		self.url = URL(string: urlString)
+		self.urlRequest = URLRequest(url: url!)
+		self.requestEncoding = method.encoder.encoding
+		self.setHttp(method: method)
+		self.setHttp(hearders: hearders)
+		self.set(parameters: rm_params, method: method)
+		defaulSessionConfig()
+	}
 	
 	public init(url: URL) {
 		self.url = url
@@ -75,18 +90,20 @@ open class RMRequest {
 		defaulSessionConfig()
 	}
 	
-	// Set and append parameters to base URL
+	// Set and append parameters from Dictionary to base URL
 	public func set(parameters: [String : Any]!, method: RMHttpMethod<Encoding>) {
 		self.parameters = (parameters != nil) ? parameters : [String:Any]()
 		let request = RMBuilder().build(request: urlRequest, parameter: parameters, method: method)
 		self.urlRequest = request
 	}
 	
-	// Set and append parameters to base URL
+	// Set and append parameters from RMParams wraper to base URL
 	public func set(parameters: [RMParams], method: RMHttpMethod<Encoding>) {
-		self.parameters = [String:Any]()
-		self.requestEncoding = method.encoder.encoding
-		self.setHttp(method: method)
+		var dictionaryArray = [Dictionary<String, Any>]()
+		for param in parameters {
+			dictionaryArray.append(param.dictionary)
+		}
+		self.parameters = ["parameters" : dictionaryArray]
 		let request = RMBuilder().build(request: urlRequest, parameter: parameters, method: method)
 		self.urlRequest = request
 	}

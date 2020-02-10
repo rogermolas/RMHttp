@@ -42,4 +42,8 @@ extension RMParams: CustomStringConvertible {
 		desc.append("\(key):\(value)")
 		return desc.joined(separator: " , ")
 	}
+	
+	public var dictionary: [String: Any] {
+		return [key: "\(value)"]
+	}
 }

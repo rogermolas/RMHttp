@@ -37,7 +37,7 @@ class DestinationViewController: UIViewController {
 	
     var GET: RMRequest {
         let urlString = "https://httpbin.org/get"
-        let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: nil, hearders: nil)
+		let request = RMRequest(urlString, .GET(.URLEncoding), nil, nil)
         return request
     }
     
@@ -49,13 +49,13 @@ class DestinationViewController: UIViewController {
             ] as [String : Any]
         
         let urlString = "https://httpbin.org/get"
-        let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: params, hearders: nil)
+		let request = RMRequest(urlString, .GET(.URLEncoding), params, nil)
         return request
     }
     
     var POST: RMRequest {
         let urlString = "https://httpbin.org/post"
-        let request = RMRequest(urlString, method: .POST(.URLEncoding), parameters: nil, hearders: nil)
+		let request = RMRequest(urlString, .POST(.URLEncoding), nil, nil)
         return request
     }
     
@@ -67,7 +67,7 @@ class DestinationViewController: UIViewController {
             ] as [String : Any]
         
         let urlString = "https://httpbin.org/post"
-        let request = RMRequest(urlString, method: .POST(.URLEncoding), parameters: params, hearders: nil)
+		let request = RMRequest(urlString, .POST(.URLEncoding), params, nil)
         return request
     }
     
@@ -79,51 +79,50 @@ class DestinationViewController: UIViewController {
             ] as [String : Any]
         
         let urlString = "https://httpbin.org/post"
-        let request = RMRequest(urlString, method: .POST(.JSONEncoding), parameters: params, hearders: nil)
+		let request = RMRequest(urlString, .POST(.JSONEncoding), params, nil)
         return request
     }
     
     var DELETE: RMRequest {
         let urlString = "https://httpbin.org/delete"
-        let request = RMRequest(urlString, method: .DELETE(.URLEncoding), parameters: nil, hearders:nil)
+		let request = RMRequest(urlString, .DELETE(.URLEncoding), nil, nil)
         return request
     }
     
     var GETHTMLString: RMRequest {
         let urlString = "https://httpbin.org/html"
-        let request = RMRequest(urlString, method: .GET(.URLEncoding), parameters: nil, hearders: nil)
+		let request = RMRequest(urlString, .GET(.URLEncoding), nil, nil)
         return request
     }
 	
 	var FORM_DATA: RMRequest {
 		let params =  [ "name":"Roger" ]
 		let urlString = "https://httpbin.org/post"
-		let request = RMRequest(urlString, method: .POST(.FomDataEncoding),
-								parameters: params, hearders: nil)
+		let request = RMRequest(urlString, .POST(.FomDataEncoding),
+								params, nil)
 		return request
 	}
 	
 	var CUSTOM_PARAM_GET: RMRequest {
-		let item = RMParams(key: "name", value: "roger")
+		let item1 = RMParams(key: "name", value: "roger")
 		let item2 = RMParams(key: "name", value: "molas")
-		let params = [item, item2]
+		let params = [item1, item2]
 		
 		let urlString = "https://httpbin.org/get"
-		let request = RMRequest(url: URL(string: urlString)!)
-		request.set(parameters: params, method: .GET(.URLEncoding))
-		request.setHttp(method: .GET(.URLEncoding))
+		let request = RMRequest(urlString, .GET(.FomDataEncoding), params, nil)
 		return request
 	}
 	
 	var CUSTOM_PARAM_POST: RMRequest {
-		let item = RMParams(key: "name", value: "roger")
+		let item1 = RMParams(key: "name", value: "roger")
 		let item2 = RMParams(key: "name", value: "molas")
-		let params = [item, item2]
+		let params = [item1, item2]
 		
 		let urlString = "https://httpbin.org/post"
-		let request = RMRequest(url: URL(string: urlString)!)
-		request.set(parameters: params, method: .POST(.URLEncoding))
-		request.setHttp(method: .POST(.URLEncoding))
+//		let request = RMRequest(url: URL(string: urlString)!)
+//		request.setHttp(method: .POST(.URLEncoding))
+//		request.set(parameters: params, method: .POST(.URLEncoding))
+		let request = RMRequest(urlString, .POST(.FomDataEncoding), params, nil)
 		return request
 	}
 
@@ -156,11 +155,12 @@ class DestinationViewController: UIViewController {
 		if type == "FORM-DATA REQUEST" {
 			reques(request: FORM_DATA, expected: JSONObject())
 		}
-		if type == "CUSTOM PARAM REQUEST GET"{
+		if type == "CUSTOM PARAM REQUEST GET" {
 			reques(request: CUSTOM_PARAM_GET, expected: JSONObject())
 		}
-		if type == "CUSTOM PARAM REQUEST POST"{
-			reques(request: CUSTOM_PARAM_POST, expected: JSONObject())
+		if type == "CUSTOM PARAM REQUEST POST" {
+			print(CUSTOM_PARAM_POST)
+//			reques(request: CUSTOM_PARAM_POST, expected: JSONObject())
 		}
     }
     
