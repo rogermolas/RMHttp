@@ -98,31 +98,33 @@ class DestinationViewController: UIViewController {
 	var FORM_DATA: RMRequest {
 		let params =  [ "name":"Roger" ]
 		let urlString = "https://httpbin.org/post"
-		let request = RMRequest(urlString, .POST(.FomDataEncoding),
-								params, nil)
+		let request = RMRequest(urlString, .POST(.FomDataEncoding), params, nil)
 		return request
 	}
 	
 	var CUSTOM_PARAM_GET: RMRequest {
 		let item1 = RMParams(key: "name", value: "roger")
 		let item2 = RMParams(key: "name", value: "molas")
-		let params = [item1, item2]
+		let item3 = RMParams(key: "boolean", value: true)
+		let item4 = RMParams(key: "number", value: 100)
+		let item5 = RMParams(key: "float", value: 1.0)
+		let params = [item1, item2, item3, item4, item5]
 		
 		let urlString = "https://httpbin.org/get"
-		let request = RMRequest(urlString, .GET(.FomDataEncoding), params, nil)
+		let request = RMRequest(urlString, .GET(.URLEncoding), params, nil)
 		return request
 	}
 	
 	var CUSTOM_PARAM_POST: RMRequest {
 		let item1 = RMParams(key: "name", value: "roger")
 		let item2 = RMParams(key: "name", value: "molas")
-		let params = [item1, item2]
+		let item3 = RMParams(key: "boolean", value: true)
+		let item4 = RMParams(key: "number", value: 100)
+		let item5 = RMParams(key: "float", value: 1.0)
+		let params = [item1, item2, item3, item4, item5]
 		
 		let urlString = "https://httpbin.org/post"
-//		let request = RMRequest(url: URL(string: urlString)!)
-//		request.setHttp(method: .POST(.URLEncoding))
-//		request.set(parameters: params, method: .POST(.URLEncoding))
-		let request = RMRequest(urlString, .POST(.FomDataEncoding), params, nil)
+		let request = RMRequest(urlString, .POST(.URLEncoding), params, nil)
 		return request
 	}
 
@@ -159,8 +161,7 @@ class DestinationViewController: UIViewController {
 			reques(request: CUSTOM_PARAM_GET, expected: JSONObject())
 		}
 		if type == "CUSTOM PARAM REQUEST POST" {
-			print(CUSTOM_PARAM_POST)
-//			reques(request: CUSTOM_PARAM_POST, expected: JSONObject())
+			reques(request: CUSTOM_PARAM_POST, expected: JSONObject())
 		}
     }
     

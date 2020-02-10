@@ -32,7 +32,7 @@ public struct RMParams {
 	
 	public init(key:String, value: Any) {
 		self.key = key
-		self.value = key
+		self.value = value
 	}
 }
 
@@ -44,6 +44,8 @@ extension RMParams: CustomStringConvertible {
 	}
 	
 	public var dictionary: [String: Any] {
-		return [key: "\(value)"]
+		return [
+			"\(key)": "\(value)",
+		]
 	}
 }
