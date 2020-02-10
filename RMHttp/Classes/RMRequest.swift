@@ -154,7 +154,7 @@ extension RMRequest {
 			data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
 			data.append("\(value)".data(using: .utf8)!)
 		}
-		self.urlRequest.httpBody = data
+		self.urlRequest.httpBody = data // One time set data body
 	}
 	
 	// Form-Data adding single field
@@ -168,7 +168,14 @@ extension RMRequest {
 		data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
 		data.append("Content-Disposition: form-data; name=\"\(fieldName)\"\r\n\r\n".data(using: .utf8)!)
 		data.append("\(value)".data(using: .utf8)!)
-		self.urlRequest.httpBody = data
+		
+		if self.urlRequest.httpBody == nil {
+			// Set data for the first time
+			self.urlRequest.httpBody = data
+		} else {
+			// Append to an existing instance
+			self.urlRequest.httpBody?.append(data)
+		}
 	}
 	
 	// Form-Data adding file to request
@@ -184,7 +191,14 @@ extension RMRequest {
 		data.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
 		data.append(file)
 		data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-		self.urlRequest.httpBody = data
+		
+		if self.urlRequest.httpBody == nil {
+			// Set data for the first time
+			self.urlRequest.httpBody = data
+		} else {
+			// Append to an existing instance
+			self.urlRequest.httpBody?.append(data)
+		}
 	}
 }
 
