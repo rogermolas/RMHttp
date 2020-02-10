@@ -63,12 +63,12 @@ Encoding are declared in public enum `Encoding`
 `JSONObject` - a representation of `Dictionary<String, Any>`
 ```swift
 {
-	"data" : "value",
-	"isBoolean" : true,
-	"list": [
-		"object1",
-		"object2"
-	]
+   "data" : "value",
+   "isBoolean" : true,
+   "list": [
+      "object1",
+	  "object2"
+   ]
 }
 ```
 
@@ -76,9 +76,9 @@ Encoding are declared in public enum `Encoding`
 
 ```swift
 [
-	{ "data1" : "value1"},
-	{ "data2" : "value2"},
-	{ "data3" : "value3"},
+   { "data1" : "value1"},
+   { "data2" : "value2"},
+   { "data3" : "value3"},
 ]
 ```
 
@@ -89,9 +89,9 @@ Any String respresentation (e.g HTML String, XML String, Plain Text)
 ##### Building request with parameters from Dictionary type
 ```swift
 let params = [
-	"string":"Ipsum",   // String
-	"number": 100,      // Number
-	"boolean":true      // Boolean
+   "string":"Ipsum",   // String
+   "number": 100,      // Number
+   "boolean":true      // Boolean
 ] as [String : Any]
 
 let urlString = "https://httpbin.org/get"
@@ -115,34 +115,34 @@ return request
 ##### Expecting Array object Response
 ```swift
 RMHttp.JSON(request: request) { (response:JSONArray?, error) in
-	guard error == nil else {
-		self.title = "Response Error"
-		self.activity.stopAnimating()
-		self.textView.text = "\(err)"
-		return
-	}
-	self.activity.stopAnimating()
-	if let data = response {
-		self.title = "Response Sucess"
-		self.textView.text = "\(data)"
-	}
+   guard error == nil else {
+      self.title = "Response Error"
+	  self.activity.stopAnimating()
+	  self.textView.text = "\(err)"
+	  return
+   }
+   self.activity.stopAnimating()
+   if let data = response {
+      self.title = "Response Sucess"
+      self.textView.text = "\(data)"
+   }
 }
 ```
 
 ##### Expecting JSON object Response
 ```swift
 RMHttp.JSON(request: request) { (response:JSONObject?, error) in
-	guard error == nil else {
-		self.title = "Response Error"
-		self.activity.stopAnimating()
-		self.textView.text = "\(err)"
-		return
-	}
-	self.activity.stopAnimating()
-	if let data = response {
-		self.title = "Response Sucess"
-		self.textView.text = "\(data)"
-	}
+   guard error == nil else {
+      self.title = "Response Error"
+	  self.activity.stopAnimating()
+	  self.textView.text = "\(err)"
+	  return
+   }
+   self.activity.stopAnimating()
+   if let data = response {
+      self.title = "Response Sucess"
+	  self.textView.text = "\(data)"
+   }
 }
 ```
 
@@ -156,8 +156,8 @@ public class func JSON<T:RMHttpProtocol>(request: RMRequest, completionHandler: 
 ##### Add fields from dictionary type
 ```swift
 let params =  [
-	"name":"lorem", 
-	"lastName":"ipsum"
+   "name":"lorem", 
+   "lastName":"ipsum"
 ]
 let urlString = "https://httpbin.org/post"
 let request = RMRequest(urlString, .POST(.FomDataEncoding), params, nil)
