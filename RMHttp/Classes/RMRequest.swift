@@ -1,72 +1,72 @@
 /*
- MIT License
- 
- RMRequest.swift
- Copyright (c) 2018-2020 Roger Molas
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
- */
+MIT License
+
+RMRequest.swift
+Copyright (c) 2018-2020 Roger Molas
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 
 
 import Foundation
 
 open class RMRequest {
-    public var urlRequest:URLRequest!
-    public var url:URL!
-    public var parameters:[String : Any]? = nil
+	public var urlRequest:URLRequest!
+	public var url:URL!
+	public var parameters:[String : Any]? = nil
 	public var requestEncoding: String = ""
-    public var allHeaders:[String : String]? = nil
-    public var sessionConfig:URLSessionConfiguration!
-    public var restrictStatusCodes:Set<Int> = []  // e.g 404, 500, return Error
-    
-    public var timeoutIntervalForRequest: TimeInterval = 30
-    public var timeoutIntervalForResource: TimeInterval = 30
-    public var httpMaximumConnectionsPerHost: Int = 1
+	public var allHeaders:[String : String]? = nil
+	public var sessionConfig:URLSessionConfiguration!
+	public var restrictStatusCodes:Set<Int> = []  // e.g 404, 500, return Error
+	
+	public var timeoutIntervalForRequest: TimeInterval = 30
+	public var timeoutIntervalForResource: TimeInterval = 30
+	public var httpMaximumConnectionsPerHost: Int = 1
 	
 	// Form-Data
-	public var httpBody = Data()
+	public var formBody = Data()
 	private let boundary = UUID().uuidString
-    
+	
 	private func defaulSessionConfig() {
-        sessionConfig = URLSessionConfiguration.default
-        sessionConfig.allowsCellularAccess = true // use cellular data
-        sessionConfig.timeoutIntervalForRequest = timeoutIntervalForRequest // timeout per request
-        sessionConfig.timeoutIntervalForResource = timeoutIntervalForResource // timeout per resource access
-        sessionConfig.httpMaximumConnectionsPerHost = httpMaximumConnectionsPerHost // connection per host
-    }
+		sessionConfig = URLSessionConfiguration.default
+		sessionConfig.allowsCellularAccess = true // use cellular data
+		sessionConfig.timeoutIntervalForRequest = timeoutIntervalForRequest // timeout per request
+		sessionConfig.timeoutIntervalForResource = timeoutIntervalForResource // timeout per resource access
+		sessionConfig.httpMaximumConnectionsPerHost = httpMaximumConnectionsPerHost // connection per host
+	}
 	
 	//MARK: - Building default request configurations
-    public init(_ urlString: String,
-                _ method: RMHttpMethod<Encoding>,
-                _ parameters: [String : Any]!,
-                _ hearders: [String : String]!) {
-        
-        self.url = URL(string: urlString)
-        self.urlRequest = URLRequest(url: url!)
+	public init(_ urlString: String,
+				_ method: RMHttpMethod<Encoding>,
+				_ parameters: [String : Any]!,
+				_ hearders: [String : String]!) {
+		
+		self.url = URL(string: urlString)
+		self.urlRequest = URLRequest(url: url!)
 		self.requestEncoding = method.encoder.encoding
-        self.setHttp(method: method)
-        self.setHttp(hearders: hearders)
-        self.set(parameters: parameters, method: method)
-        defaulSessionConfig()
-    }
+		self.setHttp(method: method)
+		self.setHttp(hearders: hearders)
+		self.set(parameters: parameters, method: method)
+		defaulSessionConfig()
+	}
 	
-	//MARK: - Building request configurations with params wrapper
+	//MARK: - Building request configurations with params container `RMParams`
 	public init(_ urlString: String,
 				_ method: RMHttpMethod<Encoding>,
 				_ rm_params:[RMParams],
@@ -177,10 +177,10 @@ extension RMRequest {
 			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)",
 				forHTTPHeaderField: HeaderField.contentType.rawValue)
 		}
-		httpBody.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-		httpBody.append("Content-Disposition: form-data; name=\"\(fieldName)\"\r\n\r\n".data(using: .utf8)!)
-		httpBody.append("\(value)".data(using: .utf8)!)
-		self.urlRequest.httpBody = httpBody
+		formBody.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+		formBody.append("Content-Disposition: form-data; name=\"\(fieldName)\"\r\n\r\n".data(using: .utf8)!)
+		formBody.append("\(value)".data(using: .utf8)!)
+		self.urlRequest.httpBody = formBody
 	}
 	
 	// Form-Data adding file to request
@@ -189,27 +189,27 @@ extension RMRequest {
 			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)",
 				forHTTPHeaderField: HeaderField.contentType.rawValue)
 		}
-		httpBody.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-		httpBody.append("Content-Disposition: form-data; name=\"\(field)\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
-		httpBody.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
-		httpBody.append(file) // In data representation
-		httpBody.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
-		self.urlRequest.httpBody = httpBody
+		formBody.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+		formBody.append("Content-Disposition: form-data; name=\"\(field)\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+		formBody.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+		formBody.append(file) // In data representation
+		formBody.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
+		self.urlRequest.httpBody = formBody
 	}
 }
 
 extension RMRequest: CustomStringConvertible {
-    public var description: String {
-        var desc: [String] = []
-        if let request = urlRequest {
-            desc.append("\(String(describing: request.url?.absoluteString))")
-        }
-        if let mParameters = parameters {
-            desc.append("\(mParameters)")
-        }
-        if let mAllHeaders = allHeaders {
-            desc.append("\(mAllHeaders)")
-        }
-        return desc.joined(separator: " : ")
-    }
+	public var description: String {
+		var desc: [String] = []
+		if let request = urlRequest {
+			desc.append("\(String(describing: request.url?.absoluteString))")
+		}
+		if let mParameters = parameters {
+			desc.append("\(mParameters)")
+		}
+		if let mAllHeaders = allHeaders {
+			desc.append("\(mAllHeaders)")
+		}
+		return desc.joined(separator: " : ")
+	}
 }
