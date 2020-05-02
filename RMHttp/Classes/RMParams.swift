@@ -30,8 +30,8 @@ import Foundation
 RMParams - is a container for duplicate key in URL `?key[]=value1&key[]=value2`
 
 - Parameters:
-- key: url query field name
-- value:  url query field value
+	`key` -  url query field name
+	`value` -  url query field value
 */
 
 public struct RMParams {

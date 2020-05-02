@@ -95,26 +95,24 @@ open class RMRequest {
 	}
 	
 	// Set and append parameters from Dictionary to base URL
-	public func set(parameters: [String : Any]!, method: RMHttpMethod<Encoding>) {
+	private func set(parameters: [String : Any]!, method: RMHttpMethod<Encoding>) {
 		self.parameters = (parameters != nil) ? parameters : [String:Any]()
 		let request = RMBuilder().build(request: urlRequest, parameter: parameters, method: method)
 		self.urlRequest = request
 	}
 	
 	// Set and append parameters from RMParams wraper to base URL
-	public func set(parameters: [RMParams], method: RMHttpMethod<Encoding>) {
+	private func set(parameters: [RMParams], method: RMHttpMethod<Encoding>) {
 		var dictionaryArray = [Dictionary<String, Any>]()
 		for param in parameters {
 			dictionaryArray.append(param.dictionary)
 		}
-		self.parameters = ["parameters" : dictionaryArray]
+		self.parameters = ["parameters" : dictionaryArray] // Log params from container
 		let request = RMBuilder().build(request: urlRequest, parameter: parameters, method: method)
 		self.urlRequest = request
 	}
-}
-
-//MARK: - Building a custom request
-extension RMRequest {
+	
+	//MARK: - Building a custom request
 	// Assign http Method
 	public func setHttp(method: RMHttpMethod<Encoding>) {
 		self.urlRequest.httpMethod = method.httpMethod
@@ -130,7 +128,7 @@ extension RMRequest {
 		}
 	}
 	
-	// Manual assign value to header
+	// Assign value to header
 	public func setValue(value: String, headerField: String) {
 		self.urlRequest.setValue(value, forHTTPHeaderField: headerField)
 	}
@@ -146,16 +144,20 @@ extension RMRequest {
 	}
 	
 	// Form-Data from params
-	public func setFormData(fields: [String : Any], _ files: [RMFormDataFile]? = nil) {
+	public func setFormData(fields: [String : Any]?, _ files: [RMFormDataFile]? = nil) {
 		let boundary = UUID().uuidString
 		if urlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
 			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)", forHTTPHeaderField: HeaderField.contentType.rawValue)
 		}
+		
 		var data = Data()
-		for (key, value) in fields {
-			data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
-			data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
-			data.append("\(value)".data(using: .utf8)!)
+		// Add Text fields (optional)
+		if fields != nil {
+			for (key, value) in fields! {
+				data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
+				data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
+				data.append("\(value)".data(using: .utf8)!)
+			}
 		}
 		
 		// Add File fields (optional)
@@ -184,7 +186,7 @@ extension RMRequest {
 	}
 	
 	// Form-Data adding file to request
-	public func addForm(field: String, file: Data, fileName: String, mimeType: String) {
+	public func addFile(field: String, file: Data, fileName: String, mimeType: String) {
 		if urlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
 			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)",
 				forHTTPHeaderField: HeaderField.contentType.rawValue)
