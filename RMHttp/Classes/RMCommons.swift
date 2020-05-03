@@ -1,7 +1,7 @@
 /*
 MIT License
 
-RMHttpCommons.swift
+RMCommons.swift
 Copyright (c) 2018-2020 Roger Molas
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,6 +25,21 @@ SOFTWARE.
 
 
 import Foundation
+
+/**
+RMCommons - Contains defined types such as Methods, Encoding, Protocols and Headers
+- Note
+*/
+
+public enum HeaderField: String {
+	case contentType = "Content-Type"
+}
+
+public enum HeaderValue: String {
+	case JSON = "application/json"
+	case URLEncoded = "application/x-www-form-urlencoded; charset=utf-8"
+	case FormData = "multipart/form-data; boundary="
+}
 
 // RMHttp Base object protocol
 public protocol RMHttpProtocol {
@@ -59,7 +74,7 @@ public enum RMHttpMethod<Encoder> {
 	case PUT(Encoder)
 	case PATCH(Encoder)
 	
-	// Parameters Encoding
+	/// Parameters encoding
 	public var encoder: Encoder {
 		switch self {
 			case .GET (let encoder): return encoder
@@ -70,7 +85,7 @@ public enum RMHttpMethod<Encoder> {
 		}
 	}
 	
-	// HTTP Methods
+	/// HTTP methods in string representations
 	public var httpMethod: String {
 		switch self {
 			case .GET: return "GET"

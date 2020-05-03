@@ -26,16 +26,6 @@ SOFTWARE.
 
 import Foundation
 
-public enum HeaderField: String {
-	case contentType = "Content-Type"
-}
-
-public enum HeaderValue: String {
-	case JSON = "application/json"
-	case URLEncoded = "application/x-www-form-urlencoded; charset=utf-8"
-	case FormData = "multipart/form-data; boundary="
-}
-
 /**
 RMBuilder - Handle URL parameters and methods constructions
 - Note
