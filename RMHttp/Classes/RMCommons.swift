@@ -28,35 +28,42 @@ import Foundation
 
 /**
 RMCommons - Contains defined types such as Methods, Encoding, Protocols and Headers
-- Note
 */
 
 public enum HeaderField: String {
 	case contentType = "Content-Type"
 }
 
+// HTTP Header types
 public enum HeaderValue: String {
 	case JSON = "application/json"
 	case URLEncoded = "application/x-www-form-urlencoded; charset=utf-8"
 	case FormData = "multipart/form-data; boundary="
 }
 
-// RMHttp Base object protocol
+/// RMHttp base object response protocol
 public protocol RMHttpProtocol {
 	associatedtype BaseObject
 	
+	/// Current object type NSNull, Dictionary or Array
 	static func getType() -> BaseObject.Type
 	
+	/// Current object reponse error. see `RMError`
 	static func internalError() -> RMError?
 }
 
-// HTTP parameters Encoding
+/// HTTP request parameters encoding
 public enum Encoding {
+	/// URL in application/x-www-form-urlencoded;
 	case URLEncoding
+	
+	/// JSON request body
 	case JSONEncoding
+	
+	/// Form data encoding
 	case FomDataEncoding
 	
-	// Parameters Encoding
+	/// Parameters encoding in string representation
 	public var encoding: String {
 		switch self {
 			case .URLEncoding: return "URL Default/Query Encoding"
@@ -66,15 +73,23 @@ public enum Encoding {
 	}
 }
 
-// HTTP Methods
+/// HTTP request methods
 public enum RMHttpMethod<Encoder> {
+	/// GET request
 	case GET(Encoder)
+	/// POST request
 	case POST(Encoder)
+	/// DELETE request
 	case DELETE(Encoder)
+	/// PUT request
 	case PUT(Encoder)
+	/// PATCH request
 	case PATCH(Encoder)
 	
-	/// Parameters encoding
+	/**
+	Current request parameters encoding
+	- Returns: Encoder type of current request
+	*/
 	public var encoder: Encoder {
 		switch self {
 			case .GET (let encoder): return encoder
@@ -84,8 +99,10 @@ public enum RMHttpMethod<Encoder> {
 			case .PUT(let encoder): return encoder
 		}
 	}
-	
-	/// HTTP methods in string representations
+	/**
+	HTTP methods in string representations
+	- Returns: Request method used in string representation
+	*/
 	public var httpMethod: String {
 		switch self {
 			case .GET: return "GET"
