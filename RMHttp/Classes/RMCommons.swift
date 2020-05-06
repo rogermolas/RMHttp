@@ -114,7 +114,13 @@ public enum RMHttpMethod<Encoder> {
 	}
 }
 
-// Data parsing problems
+/**
+	Defined data parsing errors
+	 - invalidType - When codable models is not equal to reponse model
+	 - noData - No data reponse
+	 - invalidData - Not a valid JSON reponse
+	 - unknown - Other errors return by JSonSerialization
+*/
 public enum RMHttpParsingError<TYPE:RMHttpProtocol> {
 	case invalidType(TYPE)
 	case noData(TYPE)
@@ -122,10 +128,12 @@ public enum RMHttpParsingError<TYPE:RMHttpProtocol> {
 	case unknown(TYPE)
 }
 
-// Response object type
+/// Response object types
 public enum RMHttpObject<Value> {
 	public typealias SerializedObject = Value
+	/// Request finished and parsing of data was successful (e.g status code: 200)
 	case success(Value)
+	/// Request finished but has error an error encounter (e.g failed to serialize or server response error)
 	case error(RMError)
 }
 
