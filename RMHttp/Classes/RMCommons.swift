@@ -135,10 +135,8 @@ public enum RMHttpObject<Value> {
 	case success(Value)
 	/// Request finished but has error an error encounter (e.g failed to serialize or server response error)
 	case error(RMError)
-}
-
-extension RMHttpObject {
 	
+	/// Return True if response parsing or casting was successful otherwise False
 	public var isSuccess: Bool {
 		switch self {
 			case .success: return true
@@ -146,6 +144,7 @@ extension RMHttpObject {
 		}
 	}
 	
+	/// Return value assigned as expected response like Dictionary, Array or Codable types
 	public var value: Value? {
 		switch self {
 			case .success(let value): return value
@@ -153,6 +152,7 @@ extension RMHttpObject {
 		}
 	}
 	
+	/// Return error during response parsing see also `RMHttpParsingError` and `RMError`
 	public var error: RMError? {
 		switch self {
 			case .success: return nil
@@ -203,7 +203,8 @@ extension Array:RMHttpProtocol {
 	}
 }
 
-// String Response (all Strings, e.g HTM string)
+/// String Response (all Strings, e.g HTM string)
+///
 extension String: RMHttpProtocol {
 	
 	public typealias BaseObject = String
