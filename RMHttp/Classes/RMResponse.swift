@@ -58,7 +58,7 @@ extension RMResponse {
 		// Check if status code success but no response
 		if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
 			let error = RMError()
-			error.type = .statusCode
+			error.type = .server
 			error.statusCode = self.statusCode
 			error.setHttpResponse(error: RMHttpParsingError.noData(NSNull()))
 			error.response = self
@@ -105,7 +105,7 @@ extension RMResponse {
 		// Check if status code success but no response
 		if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
 			let error = RMError()
-			error.type = .statusCode
+			error.type = .server
 			error.statusCode = self.statusCode
 			error.setHttpResponse(error: RMHttpParsingError.noData(NSNull()))
 			error.response = self

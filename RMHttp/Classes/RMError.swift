@@ -26,40 +26,34 @@ SOFTWARE.
 
 import Foundation
 
-public var RMHttpErrorKey:UInt8 = 0
-
-public enum ErrorType {
-	case parsing
-	case sessionTask
-	case statusCode
-	case none
-}
-
 open class RMError {
-	public var domain: String? = nil
+	/// Request local error type
 	public var type: ErrorType = .none
+	
+	/// Request status code
 	public var statusCode: Int = 0
-	public var localizeDescription: String = ""
+	
+	/// Request localizedDescription, set from`RMParser`
+	public var localizedDescription: String = ""
+	
 	public var reason: String? = nil
 	public var error: Error? = nil
 	public var request: RMRequest? = nil
 	public var response: RMResponse? = nil
 	public var info:Dictionary<String, Any> = Dictionary<String, Any>()
 	
+	private let domain =  "com.RMError.response"
+	
 	public init(error: Error) {
-		self.domain = "com.RMError.response"
 		self.error = error
 		self.reason = error.localizedDescription
 	}
 	
 	public init() {
-		self.domain = "com.RMError.response"
 		self.reason = "Unknown Type"
 	}
 	
-	
 	public init(reason:String?) {
-		self.domain = "com.RMError.response"
 		self.reason = reason
 	}
 	
@@ -91,9 +85,8 @@ open class RMError {
 extension RMError: CustomStringConvertible {
 	public var description: String {
 		var desc: [String] = []
-		if let mDomain = domain {
-			desc.append("\n\(mDomain)")
-		}
+		desc.append("\n\(domain)")
+		
 		if let mReason = reason {
 			desc.append(mReason)
 		}

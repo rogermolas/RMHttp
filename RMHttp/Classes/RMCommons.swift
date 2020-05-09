@@ -27,7 +27,7 @@ SOFTWARE.
 import Foundation
 
 /**
-RMCommons - Contains defined types such as Methods, Encoding, Protocols and Headers
+	RMCommons - Contains defined types such as Methods, Encoding, Protocols and Headers
 */
 
 public enum HeaderField: String {
@@ -88,7 +88,7 @@ public enum RMHttpMethod<Encoder> {
 	
 	/**
 	Current request parameters encoding
-	- Returns: Encoder type of current request
+		- Returns: Encoder type of current request
 	*/
 	public var encoder: Encoder {
 		switch self {
@@ -101,7 +101,7 @@ public enum RMHttpMethod<Encoder> {
 	}
 	/**
 	HTTP methods in string representations
-	- Returns: Request method used in string representation
+		- Returns: Request method used in string representation
 	*/
 	public var httpMethod: String {
 		switch self {
@@ -116,10 +116,10 @@ public enum RMHttpMethod<Encoder> {
 
 /**
 	Defined data parsing errors
-	 - invalidType - When codable models is not equal to reponse model
-	 - noData - No data reponse
-	 - invalidData - Not a valid JSON reponse
-	 - unknown - Other errors return by JSonSerialization
+	 - invalidType - when codable models is not equal to reponse model
+	 - noData - no data reponse
+	 - invalidData - not a valid JSON reponse
+	 - unknown - other errors return by JSonSerialization
 */
 public enum RMHttpParsingError<TYPE:RMHttpProtocol> {
 	case invalidType(TYPE)
@@ -128,11 +128,27 @@ public enum RMHttpParsingError<TYPE:RMHttpProtocol> {
 	case unknown(TYPE)
 }
 
+/**
+	Defined error types for `RMError`
+	- parsing - when data parsing is not successfull
+	- sessionTask - when url request fail (e.g Network Timeout)
+	- server - server reponse error ( status codes 4.x.x, 5.x.x)
+	- none - no error encounter, default status code 0, use for custom error response
+*/
+public enum ErrorType {
+	case parsing
+	case sessionTask
+	case server
+	case none
+}
+
 /// Response object types
 public enum RMHttpObject<Value> {
 	public typealias SerializedObject = Value
+	
 	/// Request finished and parsing of data was successful (e.g status code: 200)
 	case success(Value)
+	
 	/// Request finished but has error an error encounter (e.g failed to serialize or server response error)
 	case error(RMError)
 	
@@ -161,74 +177,70 @@ public enum RMHttpObject<Value> {
 	}
 }
 
-// Comply to RMHttp base object Protocol
+/// RMHttpObject comply to `RMHttpProtocol`
 extension RMHttpObject : RMHttpProtocol {
-	
+	/// Base object value
 	public typealias BaseObject = Value
 	
-	public static func internalError() -> RMError? { return nil }
-	
-	public static func getType() -> BaseObject.Type { return Value.self }
-	
-	public var type: BaseObject.Type {
-		return RMHttpObject.getType() // Dynamic Object type
-	}
-}
-
-// Dictionary Response (JSON object)
-extension Dictionary:RMHttpProtocol {
-	
-	public typealias BaseObject = Dictionary<String, Any>
-	
+	/// Object error see `RMError` default to nil
 	public static func internalError() -> RMError? {
 		return nil
 	}
 	
+	/// Object value type
+	public static func getType() -> BaseObject.Type {
+		return Value.self
+	}
+	
+	/// Return object type (e.g Dictionary, Array, String)
+	public var type: BaseObject.Type {
+		return RMHttpObject.getType()
+	}
+}
+
+//MARK: - Dictionary Response (JSON object)
+extension Dictionary:RMHttpProtocol {
+	public typealias BaseObject = Dictionary<String, Any>
+	
+	/// Return the type mismatch error
+	public static func internalError() -> RMError? {
+		return RMError(reason: "Invalid response type, expecting Dictionary type")
+	}
+	
+	/// Return Dictionary type
 	public static func getType() -> Dictionary<String, Any>.Type {
 		return Dictionary<String, Any>.self
 	}
 }
 
-// Array Response (JSON Array)
+//MARK: - Array Response (JSON Array)
 extension Array:RMHttpProtocol {
 	
 	public typealias BaseObject = [Dictionary<String, Any>]
 	
+	/// Return the type mismatch error
 	public static func internalError() -> RMError? {
-		return RMError(reason: "Invalid Response Type")
+		return RMError(reason: "Invalid response type, expecting Array type")
 	}
 	
+	/// Return  Array of Dictionary type
 	public static func getType() -> [Dictionary<String, Any>].Type {
 		return [Dictionary<String, Any>].self
 	}
 }
 
-/// String Response (all Strings, e.g HTM string)
-///
+//MARK: - String Response (all Strings, e.g HTML String)
 extension String: RMHttpProtocol {
 	
 	public typealias BaseObject = String
 	
 	public static func internalError() -> RMError? {
-		return RMError(reason: "Invalid Response Type")
+		return RMError(reason: "Invalid response type, expecting String")
 	}
 	
+	/// Return  raw String type (e.g String like HTML strings)
 	public static func getType() -> String.Type {
 		return String.self
-	}
-}
-
-// Error Response (All error)
-extension RMError: RMHttpProtocol {
-	
-	public typealias BaseObject = RMError
-	
-	public static func internalError() -> RMError? {
-		return RMError(reason: "Unknown Response Type")
-	}
-	
-	public static func getType() -> RMError.Type {
-		return RMError.self
 	}
 }
 

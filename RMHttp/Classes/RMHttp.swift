@@ -52,7 +52,7 @@ extension RMHttp {
 						- Parametters: \(request.parameters ?? [:])
 						- Headers: \(request.allHeaders ?? [:])
 						- Status Code: \(error!.statusCode)
-						- Reason: \(error!.localizeDescription)
+						- Reason: \(error!.localizedDescription)
 						
 						""")
 				}
@@ -139,7 +139,7 @@ extension RMHttp {
 						- Parametters: \(request.parameters ?? [:])
 						- Headers: \(request.allHeaders ?? [:])
 						- Status Code: \(error!.statusCode)
-						- Reason: \(error!.localizeDescription)
+						- Reason: \(error!.localizedDescription)
 						
 						""")
 				}

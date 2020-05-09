@@ -170,7 +170,7 @@ extension RMParser: URLSessionTaskDelegate {
 				self.isError = true
 				let responseError = RMError(error: error!)
 				responseError.type = .sessionTask
-				responseError.localizeDescription = error!.localizedDescription
+				responseError.localizedDescription = error!.localizedDescription
 				self.completionHandler!(nil, responseError)
 				self.delegate?.rmParserDidFail(self, error: responseError)
 				return
@@ -185,8 +185,8 @@ extension RMParser: URLSessionTaskDelegate {
 			if self.isError {
 				// Add error object into response object
 				let responseError = RMError()
-				responseError.type = .statusCode
-				responseError.localizeDescription = HTTPURLResponse.localizedString(
+				responseError.type = .server
+				responseError.localizedDescription = HTTPURLResponse.localizedString(
 					forStatusCode: self.currentResponse!.statusCode)
 				responseError.statusCode = self.currentResponse!.statusCode
 				responseError.response = self.currentResponse

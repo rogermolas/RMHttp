@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
     s.name         = 'RMHttp'
-    s.version      = '1.6.1'
+    s.version      = '1.7.0'
     s.summary      = 'Lightweight RESTful library for iOS and watchOS'
 
     s.homepage         = 'https://github.com/rogermolas/RMHttp'
