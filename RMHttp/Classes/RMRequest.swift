@@ -27,16 +27,21 @@ SOFTWARE.
 import Foundation
 
 open class RMRequest {
-	public var urlRequest:URLRequest!
 	public var url:URL!
+	public var urlRequest:URLRequest!
+	
 	public var parameters:[String : Any]? = nil
+	
 	public var requestEncoding: String = ""
+	
 	public var allHeaders:[String : String]? = nil
+	
 	public var sessionConfig:URLSessionConfiguration!
+	
 	public var restrictStatusCodes:Set<Int> = []  // e.g 404, 500, return Error
 	
-	public var timeoutIntervalForRequest: TimeInterval = 30
-	public var timeoutIntervalForResource: TimeInterval = 30
+	public var timeoutIntervalForRequest: TimeInterval = 60
+	public var timeoutIntervalForResource: TimeInterval = 60
 	public var httpMaximumConnectionsPerHost: Int = 1
 	
 	// Form-Data
@@ -133,7 +138,7 @@ open class RMRequest {
 		self.urlRequest.setValue(value, forHTTPHeaderField: headerField)
 	}
 	
-	// Custom Http body
+	// Set Http request body
 	public func setHttpBody(data: Data) {
 		self.urlRequest.httpBody = data
 	}

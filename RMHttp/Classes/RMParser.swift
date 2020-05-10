@@ -39,17 +39,27 @@ open class RMParser: NSObject {
 	public var isCancel = false
 	public var isError = false
 	
+	/// HTTP URL dataTask,  request task
 	private var task: URLSessionDataTask? = nil
+	
+	/// HTTP response data receive
 	private var receiveData: NSMutableData? = nil
 	
+	/// Current Error Response
 	private var currentError: RMError? = nil
+	
+	/// Current Request Created
 	private var currentRequest: RMRequest? = nil
+	
+	/// Current Request Response
 	private var currentResponse: RMResponse? = nil
 	
+	/// Parser completion handler if request finished
 	private var completionHandler:RMParserCompletionHandler? = nil
 	
-	private var startTime: CFAbsoluteTime?
+	/// Parser request start time
 	private var initializeResponseTime: CFAbsoluteTime?
+	private var startTime: CFAbsoluteTime?
 	private var endTime: CFAbsoluteTime?
 	
 	//https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_errors
@@ -58,8 +68,9 @@ open class RMParser: NSObject {
 	//https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#5xx_Server_errors
 	private var HTTPServerError:Set<Int> = [500, 501, 502, 503, 504, 505, 511]
 	
-	
+	// MARK: - Life cycle
 	public override init() { super.init() }
+	deinit { completionHandler = nil }
 	
 	public func parseWith(request: RMRequest, callback: RMParserCompletionHandler?) {
 		completionHandler = nil
@@ -77,15 +88,12 @@ open class RMParser: NSObject {
 		self.resume()
 	}
 	
-	// MARK: Life cycle
-	deinit {
-		completionHandler = nil
-	}
-	
 	// MARK: Resume task operations
 	public func resume() {
 		guard let task = task else { return }
-		if startTime == nil { startTime = CFAbsoluteTimeGetCurrent() }
+		if startTime == nil {
+			startTime = CFAbsoluteTimeGetCurrent()
+		}
 		task.resume()
 	}
 	
@@ -116,7 +124,7 @@ open class RMParser: NSObject {
 	}
 }
 
-// MARK - URLSessionDataDelegate
+//MARK: - URLSessionDataDelegate
 extension RMParser: URLSessionDataDelegate {
 	public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
 		self.receiveData?.append(data)
@@ -128,44 +136,47 @@ extension RMParser: URLSessionDataDelegate {
 		let response = response as? HTTPURLResponse
 		self.initializeResponseTime = CFAbsoluteTimeGetCurrent()
 		
-		// initial current response
+		/// initial current response
 		self.currentResponse = RMResponse()
 		self.currentResponse?.url = response?.url
 		self.currentResponse?.httpResponse = response
 		self.currentResponse?.statusCode = response!.statusCode
 		self.currentResponse?.allHeaders = response?.allHeaderFields
 		
-		// Check Client Request Error
+		/// Check Client Request Error
 		if let currentResponse = response, self.HTTPClientError.contains(currentResponse.statusCode) {
 			self.isError = true
 		}
 		
-		// Check Client Request Error, from user define status code
+		/// Check if request error is from user define status code `RMRequest` restrictStatusCodes
 		if let currentResponse = response, (self.currentRequest?.restrictStatusCodes.contains(currentResponse.statusCode))! {
 			self.isError = true
 		}
 		
-		// Check Server Response Error
+		/// Check Server Response Error
 		if let currentResponse = response, self.HTTPServerError.contains(currentResponse.statusCode) {
 			self.isError = true
 		}
 		
-		// Initialize data
+		/// Initialize response data
 		if self.receiveData != nil { self.receiveData = nil }
 		self.receiveData = NSMutableData()
 		self.receiveData?.length = 0
+		
+		/// Handshake was made
 		completionHandler(.allow)
 	}
 }
 
-// MARK - URLSessionTaskDelegate
+//MARK: - URLSessionTaskDelegate
 extension RMParser: URLSessionTaskDelegate {
 	public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
 		self.endTime = CFAbsoluteTimeGetCurrent()
 		/** Spawn output to main queue */
 		DispatchQueue.main.async {
 			self.setTimeline() // Set response end time
-			// Callback on Error
+			
+			/// Callback on Error
 			guard error == nil else {
 				self.isError = true
 				let responseError = RMError(error: error!)
@@ -176,12 +187,13 @@ extension RMParser: URLSessionTaskDelegate {
 				return
 			}
 			
-			// Raw data response
+			/// The HTTP raw response  data response
 			if self.receiveData != nil && self.receiveData!.length > 0 {
+				/// Assign data to `RMResponse` object
 				self.currentResponse?.data = self.receiveData!
 			}
 			
-			// Due to restricted Error Code it will return an error
+			/// Due to restricted Error Code assign to `RMREquest` it will return an error
 			if self.isError {
 				// Add error object into response object
 				let responseError = RMError()
