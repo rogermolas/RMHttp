@@ -102,7 +102,7 @@ open class RMRequest {
 	// Set and append parameters from Dictionary to base URL
 	private func set(parameters: [String : Any]!, method: RMHttpMethod<Encoding>) {
 		self.parameters = (parameters != nil) ? parameters : [String:Any]()
-		let request = RMBuilder().build(request: urlRequest, parameter: parameters, method: method)
+		let request = RMBuilder().build(parameters, urlRequest, method)
 		self.urlRequest = request
 	}
 	
@@ -113,7 +113,7 @@ open class RMRequest {
 			dictionaryArray.append(param.dictionary)
 		}
 		self.parameters = ["parameters" : dictionaryArray] // Log params from container
-		let request = RMBuilder().build(request: urlRequest, parameter: parameters, method: method)
+		let request = RMBuilder().buildCustom(parameters, urlRequest, method)
 		self.urlRequest = request
 	}
 	

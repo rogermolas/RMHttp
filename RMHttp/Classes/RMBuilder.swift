@@ -27,47 +27,50 @@ SOFTWARE.
 import Foundation
 
 /**
+
 RMBuilder - Handle URL parameters and methods constructions
+
 - Note
 	- for supported methods - See `RMHttpMethod`
 	- for supported encoding - See `Encoding`
+
 */
 open class RMBuilder {
 	/**
-	Build request from Dictionary type parameters
+	Build request from Dictionary type parameters.
 	
-	- Parameters
-		`request`: URLRequest object
-		`parameter`: Dictionary object that contains request parameters
-		`method`:  `RMHttpMethod<Encoding>`.  see `RMHttpMethod` and `Encoding`
+	- Parameters:
+		- request: URLRequest
+		- parameters: Dictionary object that contains request parameters
+		- method: RMHttpMethod<Encoding>.  see `RMHttpMethod` and `Encoding`
 	
-	- Returns: The constructed URLRequest object.
+	- Returns: - The constructed URLRequest object.
 	
-	- Important:
-		* Encoding of Files such as `Images`, `Videos` or etc. is not supported when using `FomDataEncoding` as method encoding.
-		* For adding file in request  use `addFile(field:file:fileName:mimeType)` from `RMRequest`
-	
+	- Attention:
+		- Encoding of Files such as `Images`, `Videos` or etc. is not supported when using `FomDataEncoding` as method encoding.
+		- For adding file in request  use `RMRequest.addFile(...)`
 	*/
-	public func build(request: URLRequest?, parameter: [String: Any]?, method: RMHttpMethod<Encoding>) -> URLRequest {
+	
+	public func build(_ parameters: [String: Any]?, _ request: URLRequest?, _ method: RMHttpMethod<Encoding>) -> URLRequest {
 		
 		var mUrlRequest = request
-		guard parameter != nil else { return mUrlRequest! }
+		guard parameters != nil else { return mUrlRequest! }
 		
 		if method.encoder == .URLEncoding { // URL Default
 			// Default Encoding
 			if encodeParametersInUrl(method: method) {
-				mUrlRequest = buildQuery(request!, parameters: parameter!)
+				mUrlRequest = buildQuery(request!, parameters: parameters!)
 			} else {
-				mUrlRequest = buildHttpBodyQuery(request!, parameters: parameter!)
+				mUrlRequest = buildHttpBodyQuery(request!, parameters: parameters!)
 			}
 		
 		} else if method.encoder == .FomDataEncoding { // Form data Body
-			mUrlRequest = addForm(request: request, parameters: parameter!)
+			mUrlRequest = addForm(request: request, parameters: parameters!)
 		
 		} else { // JSON Body
-			mUrlRequest = buildJSONHttpBody(request!, parameters: parameter!)
+			mUrlRequest = buildJSONHttpBody(request!, parameters: parameters!)
 			if mUrlRequest?.httpBody == nil {
-				let data = try! JSONSerialization.data(withJSONObject: parameter ?? "", options: [])
+				let data = try! JSONSerialization.data(withJSONObject: parameters ?? "", options: [])
 				if mUrlRequest?.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
 					mUrlRequest?.setValue(HeaderValue.JSON.rawValue, forHTTPHeaderField: HeaderField.contentType.rawValue)
 				}
@@ -76,38 +79,38 @@ open class RMBuilder {
 		}
 		return mUrlRequest!
 	}
-	
 	/**
 	Build request from RMParams container type
 	
 	e.g This is use for the same url query fields (e.g fields[]=1&fields[]=2)
 	
-	- Parameters
-		`request`: URLRequest object
-		`parameter`:  Array of `RMParams`
-		`method`:  `RMHttpMethod<Encoding>`.  see `RMHttpMethod` and `Encoding`
+	- Parameters:
+		- request: URLRequest
+		- parameters: Array of `RMParams`
+		- method: RMHttpMethod<Encoding>.  see `RMHttpMethod` and `Encoding`
 	
-	- Returns: The constructed URLRequest object.
+	- Returns: - The constructed URLRequest object.
 	
-	- Important:
-		* Encoding of Files such as `Images`, `Videos` or etc. is not supported when using `FomDataEncoding` as method encoding.
-		* For adding file in request  use `addFile(field:file:fileName:mimeType)` from `RMRequest`
+	- Attention:
+		- Encoding of Files such as `Images`, `Videos` or etc. is not supported when using `FomDataEncoding` as method encoding.
+		- For adding file in request  use `RMRequest.addFile(...)`
 	*/
-	public func build(request: URLRequest?, parameter: [RMParams]?, method: RMHttpMethod<Encoding>) -> URLRequest {
+	
+	public func buildCustom(_ parameters: [RMParams]?, _ request: URLRequest?, _ method: RMHttpMethod<Encoding>) -> URLRequest {
 		
 		var mUrlRequest = request
-		guard parameter != nil else { return mUrlRequest! }
+		guard parameters != nil else { return mUrlRequest! }
 		
 		if method.encoder == .URLEncoding { // URL Default
 			// Default Encoding
 			if encodeParametersInUrl(method: method) {
-				mUrlRequest = buildQuery(request!, parameters: parameter!)
+				mUrlRequest = buildQuery(request!, parameters: parameters!)
 			} else {
-				mUrlRequest = buildHttpBodyQuery(request!, parameters: parameter!)
+				mUrlRequest = buildHttpBodyQuery(request!, parameters: parameters!)
 			}
 		
 		} else if method.encoder == .FomDataEncoding { // Form data Body
-			mUrlRequest = addForm(request: request, parameters: parameter!)
+			mUrlRequest = addForm(request: request, parameters: parameters!)
 		
 		} else { // JSON Body
 			assertionFailure("JSON Body not supported! Please use - build(request:URLRequest, parameter: [String: Any]?, method: RMHttpMethod<Encoding>)")
@@ -116,12 +119,15 @@ open class RMBuilder {
 	}
 	
 	//MARK:- Build URL parameters
+	
 	/**
 	Build URL query from Dictionary type parameters
-	- Parameters
-	`parameters`: Dictionary object that contains request parameters
 	
-	- Returns: String url components.
+	- Parameters:
+		- parameters: Dictionary object that contains request parameters
+	
+	- Returns: - String url components.
+
 	*/
 	public func buildQuery(_ parameters: [String: Any]) -> String {
 		var components: [String] = []
@@ -134,12 +140,14 @@ open class RMBuilder {
 	
 	/**
 	Build URL query from array of `RMParams` type
-	- Parameters
-	`parameters`: Array of `RMParams`
 	
-	- Returns: String url components.
+	- Parameters:
+		- parameters: Array of `RMParams`
+	
+	- Returns: - String url components.
+	
 	*/
-	public func buildQuery(_ parameters: [RMParams]) -> String {
+	public func buildCustomQuery(_ parameters: [RMParams]) -> String {
 		var components: [String] = []
 		for item in parameters {
 			components += ["\(item.key)=\(encodeParameter(value: item.value)!)"]
@@ -150,13 +158,14 @@ open class RMBuilder {
 	//MARK:- Encode parameter value
 	/**
 	Encode parameter value
-	- Parameters
-	`value`:   Any of types (`Bool`, `Int`, `Double`, `String`)
 	
-	- Note
-		default character set is `.urlHostAllowed`
+	- Parameters:
+		- value: Any of types (`Bool`, `Int`, `Double`, `String`)
+	
+	- Remark:
+		- default character set is `.urlHostAllowed`
 	*/
-	public func encodeParameter(value: Any, _ characterSet: CharacterSet = .urlHostAllowed) -> String! {
+	public func encodeParameter(value: Any, characterSet: CharacterSet = .urlHostAllowed) -> String! {
 		var mValue: String
 		if let bool = value as? Bool  {
 			mValue = bool ? "1" : "0"
@@ -182,7 +191,7 @@ open class RMBuilder {
 	
 	private func buildQuery(_ urlRequest: URLRequest, parameters: [RMParams]) -> URLRequest? {
 		var mUrlRequest = urlRequest
-		let paramString = buildQuery(parameters)
+		let paramString = buildCustomQuery(parameters)
 		var component = URLComponents(url: mUrlRequest.url!, resolvingAgainstBaseURL: false)
 		component?.percentEncodedQuery = paramString
 		if mUrlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
@@ -205,7 +214,7 @@ open class RMBuilder {
 	
 	private func buildHttpBodyQuery(_ urlRequest: URLRequest, parameters: [RMParams]) -> URLRequest? {
 		var mUrlRequest = urlRequest
-		let paramString = buildQuery(parameters)
+		let paramString = buildCustomQuery(parameters)
 		if mUrlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
 			mUrlRequest.setValue(HeaderValue.URLEncoded.rawValue, forHTTPHeaderField: HeaderField.contentType.rawValue)
 		}
@@ -271,4 +280,3 @@ open class RMBuilder {
 		}
 	}
 }
-
