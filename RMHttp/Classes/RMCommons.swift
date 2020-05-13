@@ -34,7 +34,7 @@ public enum HeaderField: String {
 	case contentType = "Content-Type"
 }
 
-// HTTP Header types
+/// HTTP Header types
 public enum HeaderValue: String {
 	case JSON = "application/json"
 	case URLEncoded = "application/x-www-form-urlencoded; charset=utf-8"

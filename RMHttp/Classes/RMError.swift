@@ -26,6 +26,16 @@ SOFTWARE.
 
 import Foundation
 
+/**
+	RMError is error object return in all HTTP error response
+	```public enum ErrorType {	```
+			```	case parsing	```
+			```	case sessionTask	```
+			```	case server	```
+			```	case none	```
+		```}```
+*/
+
 open class RMError {
 	/// Request local error type
 	public var type: ErrorType = .none

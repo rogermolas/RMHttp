@@ -79,23 +79,23 @@ open class RMBuilder {
 		}
 		return mUrlRequest!
 	}
+	
 	/**
-	Build request from RMParams container type
+		Build request from RMParams container type
 	
-	e.g This is use for the same url query fields (e.g fields[]=1&fields[]=2)
+		e.g This is use for the same url query fields (e.g fields[]=1&fields[]=2)
 	
-	- Parameters:
-		- request: URLRequest
-		- parameters: Array of `RMParams`
-		- method: RMHttpMethod<Encoding>.  see `RMHttpMethod` and `Encoding`
+		- Parameters:
+			- request: URLRequest
+			- parameters: Array of `RMParams`
+			- method: RMHttpMethod<Encoding>.  see `RMHttpMethod` and `Encoding`
 	
-	- Returns: - The constructed URLRequest object.
+		- Returns: - The constructed URLRequest object.
 	
-	- Attention:
-		- Encoding of Files such as `Images`, `Videos` or etc. is not supported when using `FomDataEncoding` as method encoding.
-		- For adding file in request  use `RMRequest.addFile(...)`
+		- Attention:
+			- Encoding of Files such as `Images`, `Videos` or etc. is not supported when using `FomDataEncoding` as method encoding.
+			- For adding file in request  use `RMRequest.addFile(...)`
 	*/
-	
 	public func buildCustom(_ parameters: [RMParams]?, _ request: URLRequest?, _ method: RMHttpMethod<Encoding>) -> URLRequest {
 		
 		var mUrlRequest = request
@@ -118,16 +118,13 @@ open class RMBuilder {
 		return mUrlRequest!
 	}
 	
-	//MARK:- Build URL parameters
-	
 	/**
-	Build URL query from Dictionary type parameters
+		Build URL query from Dictionary type parameters
 	
-	- Parameters:
-		- parameters: Dictionary object that contains request parameters
-	
-	- Returns: - String url components.
-
+		- Parameters:
+			- parameters: Dictionary object that contains request parameters
+		
+		- Returns: - String url components.
 	*/
 	public func buildQuery(_ parameters: [String: Any]) -> String {
 		var components: [String] = []
@@ -139,13 +136,12 @@ open class RMBuilder {
 	}
 	
 	/**
-	Build URL query from array of `RMParams` type
+		Build URL query from array of `RMParams` type
 	
-	- Parameters:
-		- parameters: Array of `RMParams`
+		- Parameters:
+			- parameters: Array of `RMParams`
 	
-	- Returns: - String url components.
-	
+		- Returns: - String url components.
 	*/
 	public func buildCustomQuery(_ parameters: [RMParams]) -> String {
 		var components: [String] = []
@@ -155,15 +151,13 @@ open class RMBuilder {
 		return components.joined(separator: "&")
 	}
 	
-	//MARK:- Encode parameter value
 	/**
-	Encode parameter value
+		Encode parameter value
+		- Parameters:
+			- value: Any of types (`Bool`, `Int`, `Double`, `String`)
 	
-	- Parameters:
-		- value: Any of types (`Bool`, `Int`, `Double`, `String`)
-	
-	- Remark:
-		- default character set is `.urlHostAllowed`
+		- Remark:
+			- default character set is `.urlHostAllowed`
 	*/
 	public func encodeParameter(value: Any, characterSet: CharacterSet = .urlHostAllowed) -> String! {
 		var mValue: String
