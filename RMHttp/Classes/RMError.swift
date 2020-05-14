@@ -28,12 +28,8 @@ import Foundation
 
 /**
 	RMError is error object return in all HTTP error response
-	```public enum ErrorType {	```
-			```	case parsing	```
-			```	case sessionTask	```
-			```	case server	```
-			```	case none	```
-		```}```
+	
+	see `ErrorType`
 */
 
 open class RMError {
@@ -71,6 +67,15 @@ open class RMError {
 		self.info = info
 	}
 	
+	/**
+		Set local parsing error, this errors occurs during parsing of JSON data,
+			- Failed to decode Decodable type
+			- A type mismatch JSONObject or Array
+	
+		- Parameters:
+			- error : Generic ` RMHttpParsingError`
+	
+	*/
 	public func setHttpResponse<T>(error: RMHttpParsingError<T>) {
 		var reason = ""
 		let type:String? = String(describing: T.getType())
