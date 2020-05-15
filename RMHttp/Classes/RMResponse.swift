@@ -138,9 +138,10 @@ extension RMResponse {
 				return .error(error)
 			}
 		} catch let error {
-			let error = RMError(error: error)
+			let error = RMError()
 			error.type = .parsing
 			error.statusCode = self.statusCode
+			error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
 			return .error(error)
 		}
 	}
@@ -164,9 +165,10 @@ extension RMResponse {
 				return .error(error)
 			}
 		} catch let error {
-			let error = RMError(error: error)
+			let error = RMError()
 			error.type = .parsing
 			error.statusCode = self.statusCode
+			error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
 			return .error(error)
 		}
 	}
@@ -191,7 +193,7 @@ extension RMResponse {
 			let object = try JSONDecoder().decode(model, from: self.data! as Data)
 			return .success(object)
 		} catch let error {
-			let error = RMError(error: error)
+			let error = RMError(reason: error.localizedDescription)
 			error.type = .parsing
 			error.statusCode = self.statusCode
 			return .error(error)

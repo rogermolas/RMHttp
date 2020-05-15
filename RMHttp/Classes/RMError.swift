@@ -29,7 +29,7 @@ import Foundation
 /**
 	RMError is error object return in all HTTP error response
 	
-	see `ErrorType`
+	See `ErrorType`
 */
 
 open class RMError {
@@ -42,13 +42,20 @@ open class RMError {
 	/// Request localizedDescription, set from`RMParser`
 	public var localizedDescription: String = ""
 	
+	/// Error reason based on `ErrorType`
 	public var reason: String? = nil
+	
+	/// Error return from `RMParser`
 	public var error: Error? = nil
+	
+	/// Current request that assigned from`RMParser` if error was encountered
 	public var request: RMRequest? = nil
+	
+	/// Current response that assigned from`RMParser` if error was encountered
 	public var response: RMResponse? = nil
-	public var info:Dictionary<String, Any> = Dictionary<String, Any>()
 	
 	private let domain =  "com.RMError.response"
+	
 	
 	public init(error: Error) {
 		self.error = error
@@ -56,19 +63,17 @@ open class RMError {
 	}
 	
 	public init() {
-		self.reason = "Unknown Type"
+		self.reason = "Unknown Error"
 	}
 	
+	/// Initialize with reason, local error (e.g serialization of data was failed)
 	public init(reason:String?) {
 		self.reason = reason
 	}
 	
-	public func set(info:Dictionary<String, Any>) {
-		self.info = info
-	}
-	
 	/**
-		Set local parsing error, this errors occurs during parsing of JSON data,
+		Set local parsing error, this errors occurs during parsing of JSON data
+			- T : generic type should `RMHttpProtocol` compliant
 			- Failed to decode Decodable type
 			- A type mismatch JSONObject or Array
 	

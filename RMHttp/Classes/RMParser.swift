@@ -176,21 +176,25 @@ extension RMParser: URLSessionTaskDelegate {
 		DispatchQueue.main.async {
 			self.setTimeline() // Set response end time
 			
-			/// Callback on Error
-			guard error == nil else {
-				self.isError = true
-				let responseError = RMError(error: error!)
-				responseError.type = .sessionTask
-				responseError.localizedDescription = error!.localizedDescription
-				self.completionHandler!(nil, responseError)
-				self.delegate?.rmParserDidFail(self, error: responseError)
-				return
-			}
-			
 			/// The HTTP raw response  data response
 			if self.receiveData != nil && self.receiveData!.length > 0 {
 				/// Assign data to `RMResponse` object
 				self.currentResponse?.data = self.receiveData!
+			}
+			
+			/// Callback on Error
+			if error != nil {
+				self.isError = true
+				let responseError = RMError(error: error!)
+				responseError.type = .sessionTask
+				responseError.localizedDescription = HTTPURLResponse.localizedString(
+					forStatusCode: self.currentResponse!.statusCode)
+				responseError.statusCode = self.currentResponse!.statusCode
+				responseError.response = self.currentResponse
+				responseError.request = self.currentRequest
+				self.completionHandler!(nil, responseError)
+				self.delegate?.rmParserDidFail(self, error: responseError)
+				return
 			}
 			
 			/// Due to restricted Error Code assign to `RMREquest` it will return an error
