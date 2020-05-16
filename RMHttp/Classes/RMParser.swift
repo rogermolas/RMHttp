@@ -200,8 +200,7 @@ extension RMParser: URLSessionTaskDelegate {
 			/// Due to restricted Error Code assign to `RMREquest` it will return an error
 			if self.isError {
 				// Add error object into response object
-				let responseError = RMError()
-				responseError.type = .server
+				let responseError = RMError(errorType: .server)
 				responseError.localizedDescription = HTTPURLResponse.localizedString(
 					forStatusCode: self.currentResponse!.statusCode)
 				responseError.statusCode = self.currentResponse!.statusCode

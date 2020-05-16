@@ -57,8 +57,7 @@ extension RMResponse {
 	public func JSONResponse<T>(type: T.Type) -> RMHttpObject<T> {
 		// Check if status code success but no response
 		if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
-			let error = RMError()
-			error.type = .server
+			let error = RMError(errorType: .server)
 			error.statusCode = self.statusCode
 			error.setHttpResponse(error: RMHttpParsingError.noData(NSNull()))
 			error.response = self
@@ -86,8 +85,7 @@ extension RMResponse {
 			}
 			return .error(data.error!)
 		} else {
-			let error = RMError()
-			error.type = .parsing
+			let error = RMError(errorType: .parsing)
 			error.statusCode = self.statusCode
 			return .error(error)
 		}
@@ -104,8 +102,7 @@ extension RMResponse {
 	public func object<T:Decodable>(model: T.Type) -> RMHttpObject<T> {
 		// Check if status code success but no response
 		if self.data == nil && !successStatusCodes.contains((httpResponse?.statusCode)!) {
-			let error = RMError()
-			error.type = .server
+			let error = RMError(errorType: .server)
 			error.statusCode = self.statusCode
 			error.setHttpResponse(error: RMHttpParsingError.noData(NSNull()))
 			error.response = self
@@ -131,14 +128,13 @@ extension RMResponse {
 			if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
 				return .success(object)
 			} else {
-				let error = RMError()
-				error.type = .parsing
+				let error = RMError(errorType: .parsing)
 				error.statusCode = self.statusCode
 				error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
 				return .error(error)
 			}
 		} catch let error {
-			let error = RMError()
+			let error = RMError(error: error)
 			error.type = .parsing
 			error.statusCode = self.statusCode
 			error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
@@ -158,14 +154,13 @@ extension RMResponse {
 			if let object = try JSONSerialization.jsonObject(with: self.data! as Data, options: .allowFragments) as? T {
 				return .success(object)
 			} else {
-				let error = RMError()
-				error.type = .parsing
+				let error = RMError(errorType: .parsing)
 				error.statusCode = self.statusCode
 				error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
 				return .error(error)
 			}
 		} catch let error {
-			let error = RMError()
+			let error = RMError(error: error)
 			error.type = .parsing
 			error.statusCode = self.statusCode
 			error.setHttpResponse(error: RMHttpParsingError.invalidType(expected))
@@ -179,8 +174,7 @@ extension RMResponse {
 		if let string:String = String(data:self.data! as Data, encoding: encoding!) {
 			return .success(string)
 		}
-		let error = RMError()
-		error.type = .parsing
+		let error = RMError(errorType: .parsing)
 		error.statusCode = self.statusCode
 		error.setHttpResponse(error: RMHttpParsingError.invalidType(String()))
 		return .error(error)
@@ -193,7 +187,7 @@ extension RMResponse {
 			let object = try JSONDecoder().decode(model, from: self.data! as Data)
 			return .success(object)
 		} catch let error {
-			let error = RMError(reason: error.localizedDescription)
+			let error = RMError(error: error)
 			error.type = .parsing
 			error.statusCode = self.statusCode
 			return .error(error)

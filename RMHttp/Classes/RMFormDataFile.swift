@@ -25,14 +25,35 @@ SOFTWARE.
 
 
 import Foundation
-
+/**
+	RMFormDataFile is the object contains media data for Form-Data request
+	
+	- Note:
+		- Media can be added directly to `RMRequest` instance
+		- For adding file in request  use `RMRequest.addFile(...)`
+*/
 public struct RMFormDataFile {
+	/// FieldName  is the parameter field
 	public var fieldName: String
+	
+	/// Data file is the parameter field value
 	public var file: Data
+	
+	/// Added File file name
 	public var fileName: String
+	
+	/// mimetype or media type (see https://en.wikipedia.org/wiki/Media_type)  for supported media types
 	public var mimeType: String
 	
-	
+	/**
+		Initialization
+		
+		- Parameters:
+			- fieldName : Must be string
+			- file: Must be in Data type
+			- fileName: Must be String
+			- mimeType: Must be String
+	*/
 	public init(_ fieldName:String, _ file:Data, _ fileName: String, _ mimeType:String) {
 		self.fieldName = fieldName
 		self.file = file

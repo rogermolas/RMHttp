@@ -56,16 +56,18 @@ open class RMError {
 	
 	private let domain =  "com.RMError.response"
 	
+	/// Initialize with `ErrorType`
+	public init(errorType: ErrorType) {
+		self.type = errorType
+	}
 	
+	/// Initialize with Error, assign by `RMParser` if datatask returned an error, (e.g Network Timeout)
 	public init(error: Error) {
 		self.error = error
 		self.reason = error.localizedDescription
+		self.localizedDescription = error.localizedDescription
 	}
-	
-	public init() {
-		self.reason = "Unknown Error"
-	}
-	
+		
 	/// Initialize with reason, local error (e.g serialization of data was failed)
 	public init(reason:String?) {
 		self.reason = reason
@@ -74,7 +76,6 @@ open class RMError {
 	/**
 		Set local parsing error, this errors occurs during parsing of JSON data
 			- T : generic type should `RMHttpProtocol` compliant
-			- Failed to decode Decodable type
 			- A type mismatch JSONObject or Array
 	
 		- Parameters:
@@ -84,18 +85,20 @@ open class RMError {
 	public func setHttpResponse<T>(error: RMHttpParsingError<T>) {
 		var reason = ""
 		let type:String? = String(describing: T.getType())
+		let url = response?.url?.absoluteString  ?? ""
+		let statusCode = response?.statusCode ?? -1
 		switch error {
 			case .invalidData:
-				reason = "No data found : \(String(describing: response?.statusCode))"
+				reason = "No data found, URL: \(url), Status Code: \(statusCode)"
 				break
 			case .invalidType:
-				reason = "\(type!) : Response type mismatch"
+				reason = "\(type!) : Response type mismatch, URL: \(url), Status Code: \(statusCode)"
 				break
 			case .noData:
-				reason = "Failed \(type!) : Status: \(String(describing: response?.url?.absoluteString)) : \(String(describing: response?.statusCode))"
+				reason = "Failed \(type!), URL: \(url), Status Code: \(statusCode)"
 				break
 			case .unknown:
-				reason = "Unknown Error <\(type!)>"
+				reason = "Unknown Error <\(type!)>, URL: \(url), Status Code: \(statusCode)"
 				break
 		}
 		self.reason = reason
