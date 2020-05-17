@@ -33,26 +33,26 @@ import Foundation
 		- For adding file in request  use `RMRequest.addFile(...)`
 */
 public struct RMFormDataFile {
-	/// FieldName  is the parameter field
+	/// The parameter field name
 	public var fieldName: String
 	
-	/// Data file is the parameter field value
+	/// The parameter field value
 	public var file: Data
 	
-	/// Added File file name
+	/// The media file name
 	public var fileName: String
 	
-	/// mimetype or media type (see https://en.wikipedia.org/wiki/Media_type)  for supported media types
+	/// MimeType or media type (see https://en.wikipedia.org/wiki/Media_type)  for supported media types
 	public var mimeType: String
 	
 	/**
 		Initialization
 		
 		- Parameters:
-			- fieldName : Must be string
-			- file: Must be in Data type
-			- fileName: Must be String
-			- mimeType: Must be String
+			- fieldName: The parameter field name, must be String type
+			- file: The parameter field value, must be in Data type
+			- fileName: The media file name, must be String type
+			- mimeType: Media type, must be String (e.g  image/jpeg, application/pdf)
 	*/
 	public init(_ fieldName:String, _ file:Data, _ fileName: String, _ mimeType:String) {
 		self.fieldName = fieldName
