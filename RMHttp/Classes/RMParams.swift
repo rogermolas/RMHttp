@@ -26,23 +26,21 @@ SOFTWARE.
 
 import Foundation
 
-/**
-RMParams - is a container for duplicate key in URL `?key[]=value1&key[]=value2`
-
-- Parameters:
-	key: -  url query field name
-	value: -  url query field value
-*/
-
+/// Is a container for url request query 
 public struct RMParams {
 	
-	/// key must be string
+	/// Key must be string
 	public var key: String
 	
-	/// value must be any type
+	/// Value must be any type
 	public var value: Any
 	
-	/// Initialization
+	/**
+		Initialization
+		- Parameters:
+			- key: The parameter field name, must be String type
+			- value: The parameter field value, must be in Any type
+	*/
 	public init(key:String, value: Any) {
 		self.key = key
 		self.value = value
