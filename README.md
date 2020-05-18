@@ -50,7 +50,7 @@ $ pod install
 
 ## Usage
 
-##### HTPP Methods
+##### HTTP Methods
 HTTP Methods are declared in public enum `RMHttpMethod`.
 
 `GET`, `POST` , `DELETE` , `PUT` , `PATCH`
