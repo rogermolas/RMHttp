@@ -48,15 +48,15 @@ open class RMRequest {
 	public var formBody = Data()
 	private let boundary = UUID().uuidString
 	
-	private func defaulSessionConfig() {
-		sessionConfig = URLSessionConfiguration.default
-		sessionConfig.allowsCellularAccess = true // use cellular data
-		sessionConfig.timeoutIntervalForRequest = timeoutIntervalForRequest // timeout per request
-		sessionConfig.timeoutIntervalForResource = timeoutIntervalForResource // timeout per resource access
-		sessionConfig.httpMaximumConnectionsPerHost = httpMaximumConnectionsPerHost // connection per host
-	}
-	
-	//MARK: - Building default request configurations
+	/**
+		Initialization
+		
+		- Parameters:
+			- urlString: Request url in string type
+			- method: Request method and its encoding
+			- parameters: Request parameters in Dictionary container
+			- hearders: HTTP request headers
+	*/
 	public init(_ urlString: String,
 				_ method: RMHttpMethod<Encoding>,
 				_ parameters: [String : Any]!,
@@ -71,7 +71,15 @@ open class RMRequest {
 		defaulSessionConfig()
 	}
 	
-	//MARK: - Building request configurations with params container `RMParams`
+	/**
+		Initialization
+	
+		- Parameters:
+			- urlString: Request url in string type
+			- method: Request method and its encoding
+			- rm_params: Request parameters in `RMParams` container
+			- hearders: HTTP request headers
+	*/
 	public init(_ urlString: String,
 				_ method: RMHttpMethod<Encoding>,
 				_ rm_params:[RMParams],
@@ -97,6 +105,14 @@ open class RMRequest {
 		self.url = url
 		self.urlRequest = URLRequest(url: url, cachePolicy: cachePolicy, timeoutInterval: timeoutInterval)
 		defaulSessionConfig()
+	}
+	
+	private func defaulSessionConfig() {
+		sessionConfig = URLSessionConfiguration.default
+		sessionConfig.allowsCellularAccess = true // use cellular data
+		sessionConfig.timeoutIntervalForRequest = timeoutIntervalForRequest // timeout per request
+		sessionConfig.timeoutIntervalForResource = timeoutIntervalForResource // timeout per resource access
+		sessionConfig.httpMaximumConnectionsPerHost = httpMaximumConnectionsPerHost // connection per host
 	}
 	
 	// Set and append parameters from Dictionary to base URL
