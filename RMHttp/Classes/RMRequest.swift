@@ -27,21 +27,26 @@ SOFTWARE.
 import Foundation
 
 open class RMRequest {
-	public var url:URL!
-	public var urlRequest:URLRequest!
-	
-	public var parameters:[String : Any]? = nil
-	
-	public var requestEncoding: String = ""
-	
-	public var allHeaders:[String : String]? = nil
-	
+	/// Request URL session configuration
 	public var sessionConfig:URLSessionConfiguration!
-	
-	public var restrictStatusCodes:Set<Int> = []  // e.g 404, 500, return Error
-	
+	/// Request URL
+	public var url:URL!
+	/// URL Request
+	public var urlRequest:URLRequest!
+	/// Request parameters
+	public var parameters:[String : Any]? = nil
+	/// Request Encoding
+	public var requestEncoding: String = ""
+	/// Request headers
+	public var allHeaders:[String : String]? = nil
+	/// User defined restricted status code  e.g 404, 500, return Error
+	public var restrictStatusCodes:Set<Int> = []
+	/// Request time out default to 60
 	public var timeoutIntervalForRequest: TimeInterval = 60
+	/// Request time out for resources default to 60
 	public var timeoutIntervalForResource: TimeInterval = 60
+
+	
 	public var httpMaximumConnectionsPerHost: Int = 1
 	
 	// Form-Data
