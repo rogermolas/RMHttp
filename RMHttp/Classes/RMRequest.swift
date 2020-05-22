@@ -45,22 +45,21 @@ open class RMRequest {
 	public var timeoutIntervalForRequest: TimeInterval = 60
 	/// Request time out for resources default to 60
 	public var timeoutIntervalForResource: TimeInterval = 60
-
-	
+	/// Maximun connection per host
 	public var httpMaximumConnectionsPerHost: Int = 1
 	
 	// Form-Data
-	public var formBody = Data()
+	private var formBody = Data()
 	private let boundary = UUID().uuidString
 	
 	/**
 		Initialization
 		
 		- Parameters:
-			- urlString: Request url in string type
-			- method: Request method and its encoding
-			- parameters: Request parameters in Dictionary container
-			- hearders: HTTP request headers
+			- urlString: Request url in string  of the receiver.
+			- method: Request method and its encoding.
+			- parameters: Request parameters in Dictionary container.
+			- hearders: HTTP request headers.
 	*/
 	public init(_ urlString: String,
 				_ method: RMHttpMethod<Encoding>,
@@ -80,10 +79,10 @@ open class RMRequest {
 		Initialization
 	
 		- Parameters:
-			- urlString: Request url in string type
-			- method: Request method and its encoding
-			- rm_params: Request parameters in `RMParams` container
-			- hearders: HTTP request headers
+			- urlString: Request url in string  of the receiver.
+			- method: Request method and its encoding.
+			- rm_params: Request parameters in `RMParams` container.
+			- hearders: HTTP request headers.
 	*/
 	public init(_ urlString: String,
 				_ method: RMHttpMethod<Encoding>,
@@ -99,13 +98,26 @@ open class RMRequest {
 		defaulSessionConfig()
 	}
 	
+	/**
+		Initialization
+	
+		- Parameters:
+			- url: The URL of the receiver.
+	*/
 	public init(url: URL) {
 		self.url = url
 		self.urlRequest = URLRequest(url: url)
 		defaulSessionConfig()
 	}
 	
-	// Url cachePolicy
+	/**
+		Initialization
+	
+		- Parameters:
+			- url: The URL of the receiver.
+			- cachePolicy: The cache policy of the receiver.
+			- timeoutInterval: The timeout interval for the request. See the commentary for the `timeoutInterval` for more information on timeout intervals. Defaults to 60.0
+	*/
 	public init(url: URL, cachePolicy: URLRequest.CachePolicy, timeoutInterval: TimeInterval) {
 		self.url = url
 		self.urlRequest = URLRequest(url: url, cachePolicy: cachePolicy, timeoutInterval: timeoutInterval)
@@ -225,6 +237,26 @@ open class RMRequest {
 		self.urlRequest.httpBody = formBody
 	}
 }
+
+/// A textual representation of this instance, suitable for debugging.
+///     let request = RMRequest(...)
+///     let s = String(describing: request)
+///     print(s)
+///
+///     // Prints "
+///			https://httpbin.org/get :
+///			[params1: value1, params2: value2 ] :
+///
+///			["headers": {
+/// 			Accept = "*/*";
+///				"Accept-Encoding" = "gzip, deflate, br";
+///				"Accept-Language" = "en-us";
+///				Host = "httpbin.org";
+///				"User-Agent" = "Demo/1 CFNetwork/1121.2.1 Darwin/19.4.0";
+///				"X-Amzn-Trace-Id" = "Root=1-5ec7b86b-98c5600039a93890a569a340";
+///				}, "origin": xxx.xxx.xxx.xx, "url": https://httpbin.org/get, "args": {
+///			}]
+///
 
 extension RMRequest: CustomStringConvertible {
 	public var description: String {
