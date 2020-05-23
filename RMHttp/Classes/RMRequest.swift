@@ -116,7 +116,7 @@ open class RMRequest {
 		- Parameters:
 			- url: The URL of the receiver.
 			- cachePolicy: The cache policy of the receiver.
-			- timeoutInterval: The timeout interval for the request. See the commentary for the `timeoutInterval` for more information on timeout intervals. Defaults to 60.0
+			- timeoutInterval: The timeout interval for the request. Defaults to 60.0
 	*/
 	public init(url: URL, cachePolicy: URLRequest.CachePolicy, timeoutInterval: TimeInterval) {
 		self.url = url
@@ -150,13 +150,22 @@ open class RMRequest {
 		self.urlRequest = request
 	}
 	
-	//MARK: - Building a custom request
-	// Assign http Method
+	/**
+		Set Request method. see `RMHttpMethod` for supported methods
+	
+		- Parameters:
+			- method: Request method with generic type `Encoding`
+	*/
 	public func setHttp(method: RMHttpMethod<Encoding>) {
 		self.urlRequest.httpMethod = method.httpMethod
 	}
 	
-	// Assign all headers
+	/**
+		Set Request headers.
+	
+		- Parameters:
+			- hearders: Request headers
+	*/
 	public func setHttp(hearders: [String : String]!){
 		self.allHeaders = hearders
 		if let mHeaders = hearders {
