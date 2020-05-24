@@ -175,12 +175,23 @@ open class RMRequest {
 		}
 	}
 	
-	// Assign value to header
+	/**
+		Set Request header value.
+	
+		- Parameters:
+			- value: Header value
+			- headerField: Header field
+	*/
 	public func setValue(value: String, headerField: String) {
 		self.urlRequest.setValue(value, forHTTPHeaderField: headerField)
 	}
 	
-	// Set Http request body
+	/**
+		Set Request http body.
+	
+		- Parameters:
+		- data: Data body
+	*/
 	public func setHttpBody(data: Data) {
 		self.urlRequest.httpBody = data
 	}
