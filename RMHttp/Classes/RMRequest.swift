@@ -41,6 +41,8 @@ open class RMRequest {
 	public var allHeaders:[String : String]? = nil
 	/// User defined restricted status code  e.g 404, 500, return Error
 	public var restrictStatusCodes:Set<Int> = []
+	/// Request allow Cellular Data,  default to True
+	public var allowsCellularAccess: Bool = true
 	/// Request time out default to 60
 	public var timeoutIntervalForRequest: TimeInterval = 60
 	/// Request time out for resources default to 60
@@ -126,7 +128,7 @@ open class RMRequest {
 	
 	private func defaulSessionConfig() {
 		sessionConfig = URLSessionConfiguration.default
-		sessionConfig.allowsCellularAccess = true // use cellular data
+		sessionConfig.allowsCellularAccess = allowsCellularAccess // allow access to cellular data
 		sessionConfig.timeoutIntervalForRequest = timeoutIntervalForRequest // timeout per request
 		sessionConfig.timeoutIntervalForResource = timeoutIntervalForResource // timeout per resource access
 		sessionConfig.httpMaximumConnectionsPerHost = httpMaximumConnectionsPerHost // connection per host
@@ -190,13 +192,18 @@ open class RMRequest {
 		Set Request http body.
 	
 		- Parameters:
-		- data: Data body
+			- data: Data body
 	*/
 	public func setHttpBody(data: Data) {
 		self.urlRequest.httpBody = data
 	}
 	
-	// Custom Session config
+	/**
+		Set Custom Session config
+	
+		- Parameters:
+			- config: URLSessionConfiguration
+	*/
 	public func setSession(config: URLSessionConfiguration) {
 		sessionConfig = config
 	}
