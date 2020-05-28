@@ -208,7 +208,13 @@ open class RMRequest {
 		sessionConfig = config
 	}
 	
-	// Form-Data from params
+	/**
+		Form data request, adding field and files in form request
+	
+		- Parameters:
+			- fields: Request field and its value in Dictionary type
+			- files: Files to be send in request, Array of `RMFormDataFile`
+	*/
 	public func setFormData(fields: [String : Any]?, _ files: [RMFormDataFile]? = nil) {
 		let boundary = UUID().uuidString
 		if urlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
