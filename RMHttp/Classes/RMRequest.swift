@@ -244,7 +244,13 @@ open class RMRequest {
 		self.urlRequest.httpBody = data // One time set data body
 	}
 	
-	// Form-Data adding single field
+	/**
+		Form data request, adding single field
+	
+		- Parameters:
+			- fieldName: Request field name
+			- value: Value of request field
+	*/
 	public func addForm(fieldName:String, value: Any) {
 		if urlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
 			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)",
