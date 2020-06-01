@@ -262,7 +262,15 @@ open class RMRequest {
 		self.urlRequest.httpBody = formBody
 	}
 	
-	// Form-Data adding file to request
+	/**
+		Form-Data adding file to request
+	
+		- Parameters:
+			- fieldName: Request field name
+			- file: Data file
+			- fileName : File name of added file
+			- mimeType: File media type (e.g image/jpg)
+	*/
 	public func addFile(field: String, file: Data, fileName: String, mimeType: String) {
 		if urlRequest.value(forHTTPHeaderField: HeaderField.contentType.rawValue) == nil {
 			urlRequest.setValue("\(HeaderValue.FormData.rawValue)\(boundary)",
