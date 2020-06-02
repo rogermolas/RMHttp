@@ -177,7 +177,7 @@ public enum RMHttpObject<Value> {
 	}
 }
 
-/// RMHttpObject comply to `RMHttpProtocol`
+/// RMHttpObject comply to `RMHttpProtocol` as base of for RMHttp response Dictionary, Array or String
 extension RMHttpObject : RMHttpProtocol {
 	/// Base object value
 	public typealias BaseObject = Value
@@ -198,8 +198,9 @@ extension RMHttpObject : RMHttpProtocol {
 	}
 }
 
-//MARK: - Dictionary Response (JSON object)
+/// Dictionary Response (JSON object)
 extension Dictionary:RMHttpProtocol {
+	/// Define the based type as  `Dictionary<String, Any>`
 	public typealias BaseObject = Dictionary<String, Any>
 	
 	/// Return the type mismatch error
