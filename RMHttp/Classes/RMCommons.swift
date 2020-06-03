@@ -214,9 +214,9 @@ extension Dictionary:RMHttpProtocol {
 	}
 }
 
-//MARK: - Array Response (JSON Array)
+/// Array Response (Array object)
 extension Array:RMHttpProtocol {
-	
+	/// Define the based type as  `Array<Any>`
 	public typealias BaseObject = [Dictionary<String, Any>]
 	
 	/// Return the type mismatch error
