@@ -230,7 +230,7 @@ extension Array:RMHttpProtocol {
 	}
 }
 
-//MARK: - String Response (all Strings, e.g HTML String)
+/// - String Response for all Strings, e.g HTML String, raw string
 extension String: RMHttpProtocol {
 	
 	public typealias BaseObject = String
