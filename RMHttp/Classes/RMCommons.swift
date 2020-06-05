@@ -232,9 +232,10 @@ extension Array:RMHttpProtocol {
 
 /// - String Response for all Strings, e.g HTML String, raw string
 extension String: RMHttpProtocol {
-	
+	/// Define the based type as  `String`
 	public typealias BaseObject = String
 	
+	/// Return the type mismatch error
 	public static func internalError() -> RMError? {
 		return RMError(reason: "Invalid response type, expecting String")
 	}
