@@ -290,7 +290,7 @@ open class RMRequest {
 ///     let s = String(describing: request)
 ///     print(s)
 ///
-///     // Prints "
+///   	print:
 ///			https://httpbin.org/get :
 ///			[params1: value1, params2: value2 ] :
 ///

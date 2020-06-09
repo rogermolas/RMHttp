@@ -105,6 +105,27 @@ open class RMError {
 	}
 }
 
+/// A textual representation of this instance, suitable for debugging.
+///     let request = RMError(...)
+///     let s = String(describing: request)
+///     print(s)
+///
+///   	print:
+///			domain : com.RMError.response
+///			reason: Failed : URL : https://httpbin.org/get , Status Code: 404
+///			request :
+///
+///			["headers": {
+/// 			Accept = "*/*";
+///				"Accept-Encoding" = "gzip, deflate, br";
+///				"Accept-Language" = "en-us";
+///				Host = "httpbin.org";
+///				"User-Agent" = "Demo/1 CFNetwork/1121.2.1 Darwin/19.4.0";
+///				"X-Amzn-Trace-Id" = "Root=1-5ec7b86b-98c5600039a93890a569a340";
+///				}, "origin": xxx.xxx.xxx.xx, "url": https://httpbin.org/get, "args": {
+///			}]
+///
+
 extension RMError: CustomStringConvertible {
 	public var description: String {
 		var desc: [String] = []
