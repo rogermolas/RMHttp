@@ -52,6 +52,14 @@ public struct RMParams {
 	}
 }
 
+/// A textual representation of this instance, suitable for debugging.
+///     let params = RMParams(...)
+///     let s = String(describing: params)
+///     print(s)
+///
+///   	print:
+///			[ key1 : value1, key2 : value2, key3 : value3 ]
+///
 extension RMParams: CustomStringConvertible {
 	public var description: String {
 		var desc: [String] = []
