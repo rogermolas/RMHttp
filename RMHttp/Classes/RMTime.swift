@@ -27,7 +27,9 @@ SOFTWARE.
 import Foundation
 
 public struct RMTime {
+	/// Request time in total
 	public let requestTime: CFAbsoluteTime
+	/// Initial response time after the hand shake has been made
 	public let initialResponseTime: CFAbsoluteTime
 	public let requestCompletionTime: CFAbsoluteTime
 	
