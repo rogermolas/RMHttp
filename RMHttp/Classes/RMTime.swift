@@ -31,6 +31,7 @@ public struct RMTime {
 	public let requestTime: CFAbsoluteTime
 	/// Initial response time after the hand shake has been made
 	public let initialResponseTime: CFAbsoluteTime
+	/// Total response time before and after the hand shake has been made
 	public let requestCompletionTime: CFAbsoluteTime
 	
 	public let requestDuration: TimeInterval
