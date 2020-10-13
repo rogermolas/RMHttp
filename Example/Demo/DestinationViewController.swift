@@ -18,7 +18,7 @@ struct Model: Decodable {
     var url:String!
     
     struct objc_headers: Decodable {
-        var Accept: String!
+        var Accept: Double!
         var Connection: String!
         var Host: String!
     }
@@ -201,7 +201,7 @@ class DestinationViewController: UIViewController {
                     \(data.origin!)
                     \(data.url!)
                     \(data.headers.Connection ?? "null")
-                    \(data.headers.Accept ?? "null")
+                    \(data.headers.Accept ?? 0.0)
                     \(data.headers.Host ?? "null")
                 """
             }
